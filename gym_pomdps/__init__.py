@@ -3,7 +3,7 @@ import re
 from pkg_resources import resource_exists, resource_filename, resource_listdir
 
 from .envs import *
-from .envs.registration import env_list, register
+from .envs.registration import env_list, register, register_mdp
 from .wrappers import *
 
 __version__ = '1.0.0'
@@ -47,5 +47,16 @@ for filename in (
     register(
         id=f'POMDP-{name}-episodic-v{version}',
         entry_point='gym_pomdps.envs:POMDP',
+        kwargs=dict(text=text, episodic=True),
+    )
+
+    register_mdp(
+        id=f'MDP-{name}-continuing-v{version}',
+        entry_point='gym_pomdps.envs:MDP',
+        kwargs=dict(text=text, episodic=False),
+    )
+    register_mdp(
+        id=f'MDP-{name}-episodic-v{version}',
+        entry_point='gym_pomdps.envs:MDP',
         kwargs=dict(text=text, episodic=True),
     )
