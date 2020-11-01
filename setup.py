@@ -11,6 +11,6 @@ setup(
     url='https://github.com/abaisero/gym-pomdps',
     packages=['gym_pomdps'],
     package_data={'': ['*.pomdp']},
-    install_requires=['gym', 'numpy', 'one-to-one', 'rl-parsers',],
+    install_requires=['gym', 'numpy', 'rl-parsers',],#'one-to-one', 'rl-parsers',],
     license='MIT',
 )
