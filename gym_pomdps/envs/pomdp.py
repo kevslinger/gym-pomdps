@@ -13,6 +13,7 @@ class POMDP(gym.Env):  # pylint: disable=abstract-method
     """Environment specified by POMDP file."""
 
     def __init__(self, text, *, episodic, seed=None):
+        print('text is {}'.format(text))
         model = pomdp_parse(text)
         self.episodic = episodic
         self.seed(seed)
@@ -107,6 +108,7 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
     def __init__(self, text, *, episodic, seed=None):
+        #print('text is {}'.format(text))
         model = mdp_parse(text)
         self.episodic = episodic
         self.seed(seed)
@@ -134,7 +136,12 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
         #    self.O = np.expand_dims(model.O, axis=0).repeat(
         #        self.state_space.n, axis=0
         #    )
-        self.R = model.R.transpose(1, 0, 2, 3).copy()
+        print(model.R)
+        print(type(model.R))
+        print(model.R.shape)
+        #self.R = model.R.transpose(1, 0, 2, 3).copy()
+        self.R = model.R.transpose(1, 0, 2).copy()
+        print(self.R)
 
         if episodic:
             self.D = model.reset.T.copy()  # only if episodic
@@ -146,6 +153,13 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
 
         self.state = -1
 
+    def _get_obs(self):
+        obs = self.get_state()
+        
+        
+    def get_state(self):
+        return self.state
+        
     def seed(self, seed):  # pylint: disable=signature-differs
         self.np_random, seed_ = seeding.np_random(seed)
         return [seed_]
@@ -154,7 +168,9 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
         self.state = self.reset_functional()
 
     def step(self, action):
-        self.state, *ret = self.step_functional(self.state, action)
+        #self.state, *ret = self.step_functional(self.state, action)
+        ret = self.step_functional(self.state, action)
+        self.state = ret[0]
         return ret
 
     def reset_functional(self):
@@ -196,4 +212,4 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
         info = dict(reward_cat=reward_cat)
 
         #return state_next, obs, reward, done, info
-        return state_next, reward, done, info
+        return (state_next, reward, done, info)
