@@ -187,8 +187,8 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
         #self.state, *ret = self.step_functional(self.state, action)
         obs = self._get_obs()
         ret = self.step_functional(self.state, obs, action)
-        obs = self._get_obs()
         self.state = ret[0]
+        obs = self._get_obs()
         return (obs, *ret[1:])
 
     def reset_functional(self):
