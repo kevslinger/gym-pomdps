@@ -54,13 +54,25 @@ for filename in (
         register_mdp(
             id=f'MDP-{name}-episodic-v{version}',
             entry_point='gym_pomdps.envs:HallwayMDP',
-            kwargs=dict(text=text, episodic=True)
+            kwargs=dict(text=text, episodic=True),
         )
     elif filename == 'mitmdp.pomdp':
         register_mdp(
             id=f'MDP-{name}-episodic-v{version}',
             entry_point='gym_pomdps.envs:MITMDP',
-            kwargs=dict(text=text, episodic=True)
+            kwargs=dict(text=text, episodic=True),
+        )
+    elif filename == 'shoppingmdp_6.v1.pomdp':
+        register_mdp(
+            id=f'MDP-{name}-episodic-v{version}',
+            entry_point='gym_pomdps.envs:ShoppingMDP',
+            kwargs=dict(text=text, episodic=True),
+        )
+    elif filename == 'cheesemdp.pomdp':
+        register_mdp(
+            id=f'MDP-{name}-episodic-v{version}',
+            entry_point='gym_pomdps.envs:CheeseMDP',
+            kwargs=dict(text=text, episodic=True),
         )
     else:
         register_mdp(
