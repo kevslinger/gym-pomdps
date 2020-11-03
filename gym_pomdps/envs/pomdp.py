@@ -224,24 +224,34 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
         #reward = self.compute_reward()
         
         #done = self.D[state, action].item() if self.episodic else False
-        reward, done = self.compute_reward()
+
+        info = {
+            'is_success' : 1 if obs['achieved_goal'] == self.goal else 0,
+            
+        }
+        
+        reward = self.compute_reward(state, self.goal, info)
+        done = self._is_success(state, self.goal)
         if done:
             state_next = -1
 
         #reward_cat = self.rewards_dict[reward]
         #info = dict(reward_cat=reward_cat)
-        info = {
-            'is_success' : 1 if obs['achieved_goal'] == self.goal else 0,
-            
-        }
+        
 
         
         #return state_next, obs, reward, done, info
         return (state_next, reward, done, info)
 
 
-    def compute_reward(self):
-        if self.state == self.goal:
-            return 1, True
+    def compute_reward(self, achieved_goal, goal, info):
+        if achieved_goal == goal:
+            return 1
         else:
-            return 0, False
+            return 0
+
+    def _is_success(self, achieved_goal, desired_goal):
+        if achieved_goal == desired_goal:
+            return 1
+        else:
+            return 0
