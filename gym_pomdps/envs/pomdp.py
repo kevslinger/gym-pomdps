@@ -12,7 +12,7 @@ class POMDP(gym.Env):  # pylint: disable=abstract-method
     """Environment specified by POMDP file."""
 
     def __init__(self, text, *, episodic, seed=None):
-        print('text is {}'.format(text))
+        #print('text is {}'.format(text))
         model = pomdp_parse(text)
         self.episodic = episodic
         self.seed(seed)
