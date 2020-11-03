@@ -26,7 +26,7 @@ def main(args):
                 tensorboard_log='./logs/cheese/', verbose=1)
     else:
         raise NotImplementedError('Environment not yet implemented. Current environment are [\'cheese\', \'mit\', and \'hallway\']')
-    model.learn(1000000)
+    model.learn(200000)
 
 
 
