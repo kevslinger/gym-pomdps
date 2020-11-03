@@ -121,6 +121,12 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
         self.state_space = spaces.Discrete(len(model.states))
         self.action_space = spaces.Discrete(len(model.actions))
         #self.observation_space = spaces.Discrete(len(model.observations))
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.Discrete(16), # 44 to 59
+            achieved_goal=spaces.Discrete(len(model.states)),
+            observation=spaces.Discrete(len(model.states)),
+        ))
+        self.goal = self._sample_goal()
         self.reward_range = model.R.min(), model.R.max()
 
         self.rewards_dict = {r: i for i, r in enumerate(np.unique(model.R))}
@@ -136,12 +142,12 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
         #    self.O = np.expand_dims(model.O, axis=0).repeat(
         #        self.state_space.n, axis=0
         #    )
-        print(model.R)
-        print(type(model.R))
-        print(model.R.shape)
+        #print(model.R)
+        #print(type(model.R))
+        #print(model.R.shape)
         #self.R = model.R.transpose(1, 0, 2, 3).copy()
         self.R = model.R.transpose(1, 0, 2).copy()
-        print(self.R)
+        #print(self.R)
 
         if episodic:
             self.D = model.reset.T.copy()  # only if episodic
@@ -155,7 +161,16 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
 
     def _get_obs(self):
         obs = self.get_state()
-        
+        achieved_goal = self.get_state()
+        return {
+            'observation' : obs,
+            'achieved_goal' : achieved_goal,
+            'desired_goal' : self.goal
+        }
+
+    # any state between 44 and 59 can be a goal (4 orientations in one of the 4 boxes.)
+    def _sample_goal(self):
+        return np.random.randint(44, 60)
         
     def get_state(self):
         return self.state
@@ -166,17 +181,20 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
 
     def reset(self):
         self.state = self.reset_functional()
+        return self._get_obs()
 
     def step(self, action):
         #self.state, *ret = self.step_functional(self.state, action)
-        ret = self.step_functional(self.state, action)
+        obs = self._get_obs()
+        ret = self.step_functional(self.state, obs, action)
+        obs = self._get_obs()
         self.state = ret[0]
-        return ret
+        return (obs, *ret[1:])
 
     def reset_functional(self):
         return self.np_random.multinomial(1, self.start).argmax().item()
 
-    def step_functional(self, state, action):
+    def step_functional(self, state, obs, action):
         if (state == -1) != (action == -1):
             raise ValueError(f'Invalid state-action pair ({state}, {action}).')
 
@@ -202,14 +220,28 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
         # )
 
         #reward = self.R[state, action, state_next, obs].item()
-        reward = self.R[state, action, state_next].item()
+        #reward = self.R[state, action, state_next].item()
+        #reward = self.compute_reward()
         
-        done = self.D[state, action].item() if self.episodic else False
+        #done = self.D[state, action].item() if self.episodic else False
+        reward, done = self.compute_reward()
         if done:
             state_next = -1
 
-        reward_cat = self.rewards_dict[reward]
-        info = dict(reward_cat=reward_cat)
+        #reward_cat = self.rewards_dict[reward]
+        #info = dict(reward_cat=reward_cat)
+        info = {
+            'is_success' : 1 if obs['achieved_goal'] == self.goal else 0,
+            
+        }
 
+        
         #return state_next, obs, reward, done, info
         return (state_next, reward, done, info)
+
+
+    def compute_reward(self):
+        if self.state == self.goal:
+            return 1, True
+        else:
+            return 0, False
