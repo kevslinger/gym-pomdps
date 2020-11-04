@@ -187,7 +187,7 @@ class MITMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = np.inf #100??
+        self.step_cap = 200 #np.inf
 
     # any state can be a goal for now
     def _sample_goal(self):
