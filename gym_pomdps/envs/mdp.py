@@ -194,15 +194,6 @@ class MITMDP(MDP):
         return np.random.randint(len(self.model.states)+1)
 
 
-class ShoppingMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed)
-
-        self.goal = self._sample_goal()
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.Discrete(len(self.model.states))
-        ))
-
 
 class CheeseMDP(MDP):
     def __init__(self, text, *, episodic, seed=None):
