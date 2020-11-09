@@ -171,7 +171,7 @@ class HallwayMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = 15 # np.inf
+        self.step_cap = 15  # np.inf
 
     # any state between 44 and 59 can be a goal (4 orientations in one of the 4 boxes.)
     def _sample_goal(self):
@@ -187,7 +187,7 @@ class MITMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = 50 #np.inf
+        self.step_cap = 50  #np.inf
 
     # any state can be a goal for now
     def _sample_goal(self):
@@ -205,30 +205,9 @@ class CheeseMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = 10 # np.inf
+        self.step_cap = 10  # np.inf
 
     # only states 9, 10, and 11 can be goals for now
     def _sample_goal(self):
         return np.random.choice([8, 9, 10])
 
-
-class CheeseOneHotMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed)
-
-        self.goal = self._sample_goal()
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.states)),
-            achieved_goal=spaces.MultiBinary(len(self.model.states)),
-            observation=spaces.Discrete(len(self.model.states))
-        ))
-        self.step_cap = np.inf
-
-    def _sample_goal(self):
-        possible_goal_1 = np.zeros(len(self.model.states), dtype=np.int)
-        possible_goal_1[8] = 1
-        possible_goal_2 = np.zeros(len(self.model.states), dtype=np.int)
-        possible_goal_2[9] = 1
-        possible_goal_3 = np.zeros(len(self.model.states), dtype=np.int)
-        possible_goal_3[10] = 1
-        return np.random.choice([possible_goal_1, possible_goal_2, possible_goal_3])
