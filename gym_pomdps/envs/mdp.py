@@ -6,9 +6,9 @@ from gym.utils import seeding
 
 from rl_parsers.mdp import parse
 
-__all__ = ['MDP', 'HallwayMDP', 'MITMDP', 'ShoppingMDP', 'CheeseMDP']
+__all__ = ['MDP', 'HallwayMDP', 'MITMDP', 'CheeseMDP']
 
-# NOTE: THIS is currently only for the hallways domain...
+# NOTE: Each domain must extend this
 class MDP(gym.Env):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
@@ -70,7 +70,7 @@ class MDP(gym.Env):  # pylint: disable=abstract-method
             'desired_goal': self.goal
         }
 
-    # any state between 44 and 59 can be a goal (4 orientations in one of the 4 boxes.)
+
     def _sample_goal(self):
         raise NotImplementedError
 
@@ -171,7 +171,7 @@ class HallwayMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = np.inf #15
+        self.step_cap = 15 # np.inf
 
     # any state between 44 and 59 can be a goal (4 orientations in one of the 4 boxes.)
     def _sample_goal(self):
@@ -205,8 +205,24 @@ class CheeseMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = np.inf # 10
+        self.step_cap = 10 # np.inf
 
     # only states 9, 10, and 11 can be goals for now
     def _sample_goal(self):
         return np.random.choice([8, 9, 10])
+
+
+class CheeseOneHotMDP(MDP):
+    def __init__(self, text, *, episodic, seed=None):
+        super().__init__(text, episodic=episodic, seed=seed)
+
+        self.goal = self._sample_goal()
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.MultiBinary(len(self.model.states)),
+            achieved_goal=spaces.MultiBinary(len(self.model.states)),
+            observation=spaces.Discrete(len(self.model.states))
+        ))
+        self.step_cap = np.inf
+
+    def _sample_goal(self):
+        return 0
