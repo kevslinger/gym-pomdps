@@ -85,3 +85,9 @@ for filename in (
             entry_point='gym_pomdps.envs:MDP',
             kwargs=dict(text=text, episodic=True),
         )
+
+register_mdp(
+    id=f'MDP-cheeseonehotmdp-episodic-v0',
+    entry_point='gym_pomdps.envs:CheeseOneHotMDP',
+    kwargs=dict(text=text, episodic=True),
+)
