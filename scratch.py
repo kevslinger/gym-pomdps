@@ -11,24 +11,27 @@ import gym, gym_pomdps
 
 def main(args):
     model_class = DQN
-    goal_selection_strategy = 'future'
     if 'hallway' in args.env:
         env = gym.make('MDP-hallwaymdp-episodic-v0')
-        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy,
+        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                     tensorboard_log=args.hallway_logdir, verbose=1)
         model.learn(200000)
     if 'mit' in args.env:
         env = gym.make('MDP-mitmdp-episodic-v0')
-        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy,
+        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                     tensorboard_log=args.mit_logdir, verbose=1)
         model.learn(200000)
     if 'cheese' in args.env:
         env = gym.make('MDP-cheesemdp-episodic-v0')
-        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=goal_selection_strategy,
+        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                 tensorboard_log=args.cheese_logdir, verbose=1)
         model.learn(200000)
     #else:
     #    raise NotImplementedError('Environment not yet implemented. Current environment are [\'cheese\', \'mit\', and \'hallway\']')
+    if 'cheeseonehot' in args.env:
+        env = gym.make('MDP-cheeseonehotmdp-episodic-v0')
+        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
+                    tensorboard_log='./logs/cheeseonehot', verbose=1)
 
 
 
@@ -43,5 +46,7 @@ if __name__ == '__main__':
                         help='Where to store the logs for the mit environment')
     parser.add_argument('--cheese_logdir', type=str, default='./logs/cheese',
                         help='Where to store the logs for the cheese environment')
+    parser.add_argument('--goal_selection_strategy', type=str, default='future',
+                        help='Goal selection strategy (choose \'future\' or \'final\')')
 
     main(parser.parse_args())
