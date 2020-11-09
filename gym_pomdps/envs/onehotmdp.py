@@ -100,11 +100,11 @@ class OneHotMDP(gym.Env):  # pylint: disable=abstract-method
         return self.np_random.multinomial(1, self.start)
         
     def step_functional(self, state, obs, action):
-        if (state == -1) != (action == -1):
-            raise ValueError(f'Invalid state-action pair ({state}, {action}).')
+        #if (state == -1) != (action == -1):
+        #    raise ValueError(f'Invalid state-action pair ({state}, {action}).')
 
-        if state == -1 and action == -1:
-            return -1, -1, 0.0, True, None
+        #if state == -1 and action == -1:
+        #    return -1, -1, 0.0, True, None
 
         #assert 0 <= state < self.state_space.n
         assert 0 <= action < self.action_space.n
