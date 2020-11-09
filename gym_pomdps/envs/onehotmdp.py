@@ -185,7 +185,7 @@ class CheeseOneHotMDP(OneHotMDP):
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.MultiBinary(len(self.model.states)),
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
-            observation=spaces.Discrete(len(self.model.states))
+            observation=spaces.MultiBinary(len(self.model.states))
         ))
         self.step_cap = np.inf
 
