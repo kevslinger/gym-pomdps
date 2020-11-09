@@ -193,7 +193,7 @@ class CheeseOneHotMDP(OneHotMDP):
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
             observation=spaces.MultiBinary(len(self.model.states))
         ))
-        self.step_cap = np.inf
+        self.step_cap = 10 #np.inf
 
     def _sample_goal(self):
         possible_goal_1 = np.zeros(len(self.model.states), dtype=np.int)
