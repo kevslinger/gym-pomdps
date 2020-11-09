@@ -33,7 +33,11 @@ def main(args):
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                     tensorboard_log=args.cheeseonehot_logdir, verbose=1)
         model.learn(200000)
-
+    if 'hallwayonehot' in args.env:
+        env = gym.make('MDP-hallwayonehotmdp-episodic-v0')
+        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
+                    tensorboard_log=args.hallwayonehot_logdir, verbose=1)
+        model.learn(200000)
 
 
 
@@ -48,6 +52,8 @@ if __name__ == '__main__':
                         help='Where to store the logs for the cheese environment')
     parser.add_argument('--cheeseonehot_logdir', type=str, default='./logs/cheeseonehot',
                         help='Where to store the logs for the cheese one hot environment')
+    parser.add_argument('--hallwayonehot_logdir', type=str, default='./logs/hallwayonehot',
+                        help='Where to store the logs for the hallway one hot environment.')
     parser.add_argument('--goal_selection_strategy', type=str, default='future',
                         help='Goal selection strategy (choose \'future\' or \'final\')')
 

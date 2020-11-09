@@ -56,6 +56,11 @@ for filename in (
             entry_point='gym_pomdps.envs:HallwayMDP',
             kwargs=dict(text=text, episodic=True),
         )
+        register_mdp(
+            id=f'MDP-hallwayonehotmdp-episodic-v0',
+            entry_point='gym_pomdps.envs:HallwayOneHotMDP',
+            kwargs=dict(text=text, episodic=True)
+        )
     elif filename == 'mitmdp.pomdp':
         register_mdp(
             id=f'MDP-{name}-episodic-v{version}',

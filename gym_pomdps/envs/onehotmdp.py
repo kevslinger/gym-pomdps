@@ -6,7 +6,7 @@ from gym.utils import seeding
 
 from rl_parsers.mdp import parse
 
-__all__ = ['OneHotMDP', 'CheeseOneHotMDP']
+__all__ = ['OneHotMDP', 'HallwayOneHotMDP', 'CheeseOneHotMDP']
 
 
 # NOTE: Each domain must extend this
@@ -170,7 +170,6 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             return 0
         else:
             return -1
-
         
     def _is_success(self, achieved_goal, desired_goal):
         #if achieved_goal == desired_goal:
@@ -183,6 +182,25 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             return False
 
 
+class HallwayOneHotMDP(OneHotMDP):
+    def __init__(self, text, *, episodic, seed=None):
+        super().__init__(text, episodic=episodic, seed=seed)
+
+        self.goal = self._sample_goal()
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.MultiBinary(len(self.model.states)),
+            achieved_goal=spaces.MultiBinary(len(self.model.states)),
+            observation=spaces.MultiBinary(len(self.model.states))
+        ))
+        self.step_cap = 15  # np.inf
+
+    def _sample_goal(self):
+        possible_goals = list(range(44, 60))
+        goal = np.zeros(len(self.model.states), dtype=np.int)
+        goal[np.random.choice(possible_goals)] = 1
+        return goal
+
+
 class CheeseOneHotMDP(OneHotMDP):
     def __init__(self, text, *, episodic, seed=None):
         super().__init__(text, episodic=episodic, seed=seed)
@@ -193,14 +211,18 @@ class CheeseOneHotMDP(OneHotMDP):
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
             observation=spaces.MultiBinary(len(self.model.states))
         ))
-        self.step_cap = np.inf  #10
+        self.step_cap = 10  # np.inf
 
     def _sample_goal(self):
-        possible_goal_1 = np.zeros(len(self.model.states), dtype=np.int)
-        possible_goal_1[8] = 1
-        possible_goal_2 = np.zeros(len(self.model.states), dtype=np.int)
-        possible_goal_2[9] = 1
-        possible_goal_3 = np.zeros(len(self.model.states), dtype=np.int)
-        possible_goal_3[10] = 1
-        possible_goals = [possible_goal_1, possible_goal_2, possible_goal_3]
-        return possible_goals[np.random.choice(len(possible_goals))]
+        possible_goals = [8, 9, 10]
+        goal = np.zeros(len(self.model.states), dtype=np.int)
+        goal[np.random.choice(possible_goals)] = 1
+        return goal
+        #possible_goal_1 = np.zeros(len(self.model.states), dtype=np.int)
+        #possible_goal_1[8] = 1
+        #possible_goal_2 = np.zeros(len(self.model.states), dtype=np.int)
+        #possible_goal_2[9] = 1
+        #possible_goal_3 = np.zeros(len(self.model.states), dtype=np.int)
+        #possible_goal_3[10] = 1
+        #possible_goals = [possible_goal_1, possible_goal_2, possible_goal_3]
+        #return possible_goals[np.random.choice(len(possible_goals))]
