@@ -74,6 +74,11 @@ for filename in (
             entry_point='gym_pomdps.envs:CheeseMDP',
             kwargs=dict(text=text, episodic=True),
         )
+        register_mdp(
+            id=f'MDP-cheeseonehotmdp-episodic-v0',
+            entry_point='gym_pomdps.envs:CheeseOneHotMDP',
+            kwargs=dict(text=text, episodic=True),
+        )
     else:
         register_mdp(
             id=f'MDP-{name}-continuing-v{version}',
@@ -86,8 +91,4 @@ for filename in (
             kwargs=dict(text=text, episodic=True),
         )
 
-register_mdp(
-    id=f'MDP-cheeseonehotmdp-episodic-v0',
-    entry_point='gym_pomdps.envs:CheeseOneHotMDP',
-    kwargs=dict(text=text, episodic=True),
-)
+
