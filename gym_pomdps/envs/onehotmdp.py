@@ -149,7 +149,7 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
        
         if done:
             #state_next = -1
-            state_next = np.zeros(len(model.states), dtype=np.int)
+            state_next = np.zeros(len(self.model.states), dtype=np.int)
             
         self.steps += 1
         if self.steps >= self.step_cap:
