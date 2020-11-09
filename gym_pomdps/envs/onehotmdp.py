@@ -196,4 +196,5 @@ class CheeseOneHotMDP(OneHotMDP):
         possible_goal_2[9] = 1
         possible_goal_3 = np.zeros(len(self.model.states), dtype=np.int)
         possible_goal_3[10] = 1
-        return np.random.choice([possible_goal_1, possible_goal_2, possible_goal_3])
+        possible_goals = [possible_goal_1, possible_goal_2, possible_goal_3]
+        return possible_goals[np.random.choice(len(possible_goals))]
