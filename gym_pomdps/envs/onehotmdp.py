@@ -6,7 +6,7 @@ from gym.utils import seeding
 
 from rl_parsers.mdp import parse
 
-__all__ = ['OneHotMDP', 'OneHotCheeseMDP']
+__all__ = ['OneHotMDP', 'CheeseOneHotMDP']
 
 
 # NOTE: Each domain must extend this
