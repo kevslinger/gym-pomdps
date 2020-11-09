@@ -10,7 +10,7 @@ __all__ = ['OneHotMDP', 'CheeseOneHotMDP']
 
 
 # NOTE: Each domain must extend this
-class OneHotMDP(gym.Env):  # pylint: disable=abstract-method
+class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
     def __init__(self, text, *, episodic, seed=None):
@@ -60,8 +60,9 @@ class OneHotMDP(gym.Env):  # pylint: disable=abstract-method
         # self.EO = self.TO.sum(-2)
         # self.ER = (self.TO * self.R).sum((-2, -1))
 
-        self.state = -1
-
+        #self.state = -1
+        self.state = np.zeros(len(model.states), dtype=np.int)
+        
     def _get_obs(self):
         obs = self.get_state()
         achieved_goal = self.get_state()
@@ -100,6 +101,10 @@ class OneHotMDP(gym.Env):  # pylint: disable=abstract-method
         return self.np_random.multinomial(1, self.start)
         
     def step_functional(self, state, obs, action):
+        if (np.array_equal(state, np.zeros(len(self.model.states), dtype=np.int))) != (action == -1):
+            raise ValueError(f'Invalid state-action pair ({state}, {action}).')
+        if (np.array_equal(state, np.zeros(len(self.model.states), dtype=np.int))) and action == -1:
+            return  np.zeros(len(self.model.states), dtype=np.int), -1, True, None
         #if (state == -1) != (action == -1):
         #    raise ValueError(f'Invalid state-action pair ({state}, {action}).')
 
@@ -143,8 +148,9 @@ class OneHotMDP(gym.Env):  # pylint: disable=abstract-method
         reward = self.compute_reward(state, self.goal, info)
        
         if done:
-            state_next = -1
-
+            #state_next = -1
+            state_next = np.zeros(len(model.states), dtype=np.int)
+            
         self.steps += 1
         if self.steps >= self.step_cap:
             done = True

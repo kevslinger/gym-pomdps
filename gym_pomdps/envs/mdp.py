@@ -9,7 +9,7 @@ from rl_parsers.mdp import parse
 __all__ = ['MDP', 'HallwayMDP', 'MITMDP', 'CheeseMDP']
 
 # NOTE: Each domain must extend this
-class MDP(gym.Env):  # pylint: disable=abstract-method
+class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
     def __init__(self, text, *, episodic, seed=None):
