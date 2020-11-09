@@ -177,7 +177,7 @@ class OneHotMDP(gym.Env):  # pylint: disable=abstract-method
             return False
 
 
-class CheeseOneHotMDP(MDP):
+class CheeseOneHotMDP(OneHotMDP):
     def __init__(self, text, *, episodic, seed=None):
         super().__init__(text, episodic=episodic, seed=seed)
 
