@@ -192,7 +192,7 @@ class HallwayOneHotMDP(OneHotMDP):
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
             observation=spaces.MultiBinary(len(self.model.states))
         ))
-        self.step_cap = np.inf  # 15
+        self.step_cap = 15 #np.inf
 
     def _sample_goal(self):
         possible_goals = list(range(44, 60))
