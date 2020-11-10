@@ -150,9 +150,9 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
     def compute_reward(self, achieved_goal, goal, info):
         if achieved_goal == goal:
-            return -1
-        else:
             return 0
+        else:
+            return -1
 
     def _is_success(self, achieved_goal, desired_goal):
         if achieved_goal == desired_goal:
