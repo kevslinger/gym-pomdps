@@ -167,9 +167,9 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         #else:
         #    return -1
         if np.array_equal(achieved_goal, goal):
-            return 0
+            return 1
         else:
-            return -1
+            return 0
         
     def _is_success(self, achieved_goal, desired_goal):
         #if achieved_goal == desired_goal:
