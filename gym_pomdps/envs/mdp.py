@@ -171,7 +171,7 @@ class HallwayMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = 15  # np.inf
+        self.step_cap = np.inf  # 15
 
     # any state between 44 and 59 can be a goal (4 orientations in one of the 4 boxes.)
     def _sample_goal(self):
