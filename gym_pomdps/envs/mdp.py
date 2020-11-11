@@ -205,7 +205,7 @@ class CheeseMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = np.inf #10
+        self.step_cap = 10  # np.inf
 
     # only states 9, 10, and 11 can be goals for now
     def _sample_goal(self):
