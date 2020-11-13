@@ -89,7 +89,7 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
     def reset(self):
         self.state = self.reset_functional()
         self.steps = 0
-        self.goal = self._sample_goal()
+        self.goal = self._sample_goal().copy()
         return self._get_obs()
 
     def step(self, action):
