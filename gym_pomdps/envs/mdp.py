@@ -76,8 +76,8 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
         }
 
 
-    #def _sample_goal(self):
-    #    raise NotImplementedError
+    def _sample_goal(self):
+        raise NotImplementedError
 
     def get_state(self):
         return self.state
@@ -167,15 +167,15 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
             return False
 
     # any state can be a goal for now
-    def _sample_goal(self):
-        return np.random.randint(self.lower_bound, self.upper_bound)
+    #def _sample_goal(self):
+    #    return np.random.randint(self.lower_bound, self.upper_bound)
 
 
 class HallwayMDP(MDP):
     def __init__(self, text, *, episodic, seed=None):
 
         super().__init__(text, episodic=episodic, seed=seed, lower_bound=44)
-        #self.goal = self._sample_goal()
+        self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(16),  # 44 to 59
             achieved_goal=spaces.Discrete(len(self.model.states)),
@@ -184,14 +184,14 @@ class HallwayMDP(MDP):
         self.step_cap = 15 #np.inf
 
     # any state between 44 and 59 can be a goal (4 orientations in one of the 4 boxes.)
-    #def _sample_goal(self):
-    #    return np.random.randint(44, len(self.model.states)+1)
+    def _sample_goal(self):
+        return np.random.randint(44, len(self.model.states)+1)
 
 
 class MITMDP(MDP):
     def __init__(self, text, *, episodic, seed=None):
         super().__init__(text, episodic=episodic, seed=seed)
-        #self.goal = self._sample_goal()
+        self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(len(self.model.states)),
             achieved_goal=spaces.Discrete(len(self.model.states)),
@@ -200,15 +200,15 @@ class MITMDP(MDP):
         self.step_cap = 50  #np.inf
 
     # any state can be a goal for now
-    #def _sample_goal(self):
-    #    return np.random.randint(len(self.model.states)+1)
+    def _sample_goal(self):
+        return np.random.randint(len(self.model.states)+1)
 
 
 class CheeseMDP(MDP):
     def __init__(self, text, *, episodic, seed=None):
         super().__init__(text, episodic=episodic, seed=seed, lower_bound=8, upper_bound=11)
 
-        #self.goal = self._sample_goal()
+        self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(3),
             achieved_goal=spaces.Discrete(len(self.model.states)),
@@ -217,6 +217,6 @@ class CheeseMDP(MDP):
         self.step_cap = 10  # np.inf
 
     # only states 9, 10, and 11 can be goals for now
-    #def _sample_goal(self):
-    #    return np.random.choice([8, 9, 10])
+    def _sample_goal(self):
+        return np.random.choice([8, 9, 10])
 
