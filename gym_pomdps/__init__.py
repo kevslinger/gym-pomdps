@@ -68,7 +68,7 @@ for filename in (
             kwargs=dict(text=text, episodic=True),
         )
         register_mdp(
-            id=f'MDP-mitonehot-episodic-v{version}',
+            id=f'MDP-mitonehotmdp-episodic-v{version}',
             entry_point='gym_pomdps.envs:MITOneHotMDP',
             kwargs=dict(text=text, episodic=True)
         )

@@ -39,7 +39,9 @@ def main(args):
                     tensorboard_log=args.logdir, verbose=1)
         model.learn(200000)
     if 'mitonehot' == args.env:
-        env = gym.
+        env = gym.make('MDP-mitonehotmdp-episodic-v0')
+        model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
+                    tensorboard_log=args.logdir, verbose=1)
 
 
 if __name__ == '__main__':
