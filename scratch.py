@@ -11,29 +11,29 @@ import gym, gym_pomdps
 
 def main(args):
     model_class = DQN
-    if 'hallway' in args.env:
+    if 'hallway' == args.env:
         env = gym.make('MDP-hallwaymdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                     tensorboard_log=args.hallwaylogdir, verbose=1)
         model.learn(200000)
-    if 'mit' in args.env:
+    if 'mit' == args.env:
         env = gym.make('MDP-mitmdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                     tensorboard_log=args.logdir, verbose=1)
         model.learn(200000)
-    if 'cheese' in args.env:
+    if 'cheese' == args.env:
         env = gym.make('MDP-cheesemdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                 tensorboard_log=args.logdir, verbose=1)
         model.learn(200000)
     #else:
     #    raise NotImplementedError('Environment not yet implemented. Current environment are [\'cheese\', \'mit\', and \'hallway\']')
-    if 'cheeseonehot' in args.env:
+    if 'cheeseonehot' == args.env:
         env = gym.make('MDP-cheeseonehotmdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                     tensorboard_log=args.logdir, verbose=1)
         model.learn(200000)
-    if 'hallwayonehot' in args.env:
+    if 'hallwayonehot' == args.env:
         env = gym.make('MDP-hallwayonehotmdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
                     tensorboard_log=args.logdir, verbose=1)
@@ -43,7 +43,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('env', nargs='+', help='Environment you want to process')
+    parser.add_argument('--env', help='Environment you want to process')
     parser.add_argument('--hallway_logdir', type=str, default='./logs/hallway',
                         help='Where to store the logs for the hallway environment')
     parser.add_argument('--mit_logdir', type=str, default='./logs/mit',
