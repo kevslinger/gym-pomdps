@@ -123,7 +123,7 @@ if __name__ == '__main__':
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
-    with open('tools/automate_config.yaml', 'r') as fh:
+    with open('automate_config.yaml', 'r') as fh:
         config = yaml.safe_load(fh)
 
     dispatcher = dispatcher_cls(config, output_dir)
