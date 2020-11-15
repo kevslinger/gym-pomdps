@@ -126,5 +126,5 @@ if __name__ == '__main__':
     with open('automate_config.yaml', 'r') as fh:
         config = yaml.safe_load(fh)
 
-    dispatcher = dispatcher_cls(config, output_dir)
+    dispatcher = Dispatcher(config, output_dir)
     dispatcher.execute()
