@@ -187,7 +187,7 @@ class HallwayOneHotMDP(OneHotMDP):
     def __init__(self, text, *, episodic, seed=None):
         super().__init__(text, episodic=episodic, seed=seed)
 
-        self.goal = self._sample_goal()
+        #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.MultiBinary(len(self.model.states)),
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
@@ -206,7 +206,7 @@ class CheeseOneHotMDP(OneHotMDP):
     def __init__(self, text, *, episodic, seed=None):
         super().__init__(text, episodic=episodic, seed=seed)
 
-        self.goal = self._sample_goal()
+        #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.MultiBinary(len(self.model.states)),
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
@@ -227,3 +227,24 @@ class CheeseOneHotMDP(OneHotMDP):
         #possible_goal_3[10] = 1
         #possible_goals = [possible_goal_1, possible_goal_2, possible_goal_3]
         #return possible_goals[np.random.choice(len(possible_goals))]
+
+
+class MITOneHotMDP(OneHotMDP):
+    def __init__(self, text, *, episodic, seed=None):
+        super().__init__(text, episodic=episodic, seed=seed)
+
+        #self.goal = self._sample_goal()
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.MultiBinary(len(self.model.states)),
+            achieved_goal=spaces.MultiBinary(len(self.model.states)),
+            observation=spaces.MultiBinary(len(self.model.states))
+        ))
+        self.step_cap = 50
+
+    def _sample_goal(self):
+        # 168, 169, 170, 171
+        possible_goals = list(range(168, 172))
+        goal = np.zeros(len(self.model.states), dtype=np.int)
+        goal[np.random.choice(possible_goals)] = 1
+        return goal
+        

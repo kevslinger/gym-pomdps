@@ -67,11 +67,10 @@ for filename in (
             entry_point='gym_pomdps.envs:MITMDP',
             kwargs=dict(text=text, episodic=True),
         )
-    elif filename == 'shoppingmdp_6.v1.pomdp':
         register_mdp(
-            id=f'MDP-{name}-episodic-v{version}',
-            entry_point='gym_pomdps.envs:ShoppingMDP',
-            kwargs=dict(text=text, episodic=True),
+            id=f'MDP-mitonehot-episodic-v{version}',
+            entry_point='gym_pomdps.envs:MITOneHotMDP',
+            kwargs=dict(text=text, episodic=True)
         )
     elif filename == 'cheesemdp.pomdp':
         register_mdp(
