@@ -14,29 +14,29 @@ def main(args):
     if 'hallway' in args.env:
         env = gym.make('MDP-hallwaymdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
-                    tensorboard_log=args.hallway_logdir, verbose=1)
+                    tensorboard_log=args.hallwaylogdir, verbose=1)
         model.learn(200000)
     if 'mit' in args.env:
         env = gym.make('MDP-mitmdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
-                    tensorboard_log=args.mit_logdir, verbose=1)
+                    tensorboard_log=args.logdir, verbose=1)
         model.learn(200000)
     if 'cheese' in args.env:
         env = gym.make('MDP-cheesemdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
-                tensorboard_log=args.cheese_logdir, verbose=1)
+                tensorboard_log=args.logdir, verbose=1)
         model.learn(200000)
     #else:
     #    raise NotImplementedError('Environment not yet implemented. Current environment are [\'cheese\', \'mit\', and \'hallway\']')
     if 'cheeseonehot' in args.env:
         env = gym.make('MDP-cheeseonehotmdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
-                    tensorboard_log=args.cheeseonehot_logdir, verbose=1)
+                    tensorboard_log=args.logdir, verbose=1)
         model.learn(200000)
     if 'hallwayonehot' in args.env:
         env = gym.make('MDP-hallwayonehotmdp-episodic-v0')
         model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
-                    tensorboard_log=args.hallwayonehot_logdir, verbose=1)
+                    tensorboard_log=args.logdir, verbose=1)
         model.learn(200000)
 
 

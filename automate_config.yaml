@@ -1,0 +1,21 @@
+---
+"python scratch.py":
+  env:
+    - cheese
+    - cheeseonehot
+    - hallway
+    - hallwayonehot
+    - mit
+    - mitonehot
+  goal_selection_strategy:
+    - future
+    - final
+  layer-size:
+    - 64
+    - 32
+    - 16
+    #algo:
+  #  - ppo
+  #  - ppg
+  #seed: [0,1,2,3,4]
+...
