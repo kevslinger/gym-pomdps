@@ -18,6 +18,7 @@ ENV_DEFAULTS = {
     'hallwayonehot': '--logdir ./logs/hallwayonehot',
     'mit': '--logdir ./logs/mit',
     'mitonehot': '--logdir ./logs/mitonehot',
+    'cit': '--logdir ./logs/citonehot',
 }
 
 
