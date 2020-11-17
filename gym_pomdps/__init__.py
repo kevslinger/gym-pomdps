@@ -52,45 +52,45 @@ for filename in (
 
     if filename == 'hallwaymdp.pomdp':
         register_mdp(
-            id=f'MDP-{name}mdp-episodic-v{version}',
+            id=f'MDP-{name}-episodic-v{version}',
             entry_point='gym_pomdps.envs:HallwayMDP',
             kwargs=dict(text=text, episodic=True),
         )
         register_mdp(
-            id=f'MDP-hallwayonehotmdp-episodic-v0',
+            id=f'MDP-hallwayonehot-episodic-v0',
             entry_point='gym_pomdps.envs:HallwayOneHotMDP',
             kwargs=dict(text=text, episodic=True)
         )
     elif filename == 'mitmdp.pomdp':
         register_mdp(
-            id=f'MDP-{name}mdp-episodic-v{version}',
+            id=f'MDP-{name}-episodic-v{version}',
             entry_point='gym_pomdps.envs:MITMDP',
             kwargs=dict(text=text, episodic=True),
         )
         register_mdp(
-            id=f'MDP-mitonehotmdp-episodic-v{version}',
+            id=f'MDP-mitonehot-episodic-v{version}',
             entry_point='gym_pomdps.envs:MITOneHotMDP',
             kwargs=dict(text=text, episodic=True)
         )
     elif filename == 'cheesemdp.pomdp':
         register_mdp(
-            id=f'MDP-{name}mdp-episodic-v{version}',
+            id=f'MDP-{name}-episodic-v{version}',
             entry_point='gym_pomdps.envs:CheeseMDP',
             kwargs=dict(text=text, episodic=True),
         )
         register_mdp(
-            id=f'MDP-cheeseonehotmdp-episodic-v0',
+            id=f'MDP-cheeseonehot-episodic-v0',
             entry_point='gym_pomdps.envs:CheeseOneHotMDP',
             kwargs=dict(text=text, episodic=True),
         )
     elif filename == 'citmdp.pomdp':
         register_mdp(
-            id=f'MDP-{name}mdp-episodic-v0',
+            id=f'MDP-{name}-episodic-v0',
             entry_point='gym_pomdps.envs:CITMDP',
             kwargs=dict(text=text, episodic=True)
         )
         register_mdp(
-            id=f'MDP-citonehotmdp-episodic-v0',
+            id=f'MDP-citonehot-episodic-v0',
             entry_point='gym_pomdps.envs:CITOneHotMDP',
             kwargs=dict(text=text, episodic=True)
         )
