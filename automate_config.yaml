@@ -9,7 +9,7 @@
     - mitonehot
     - cit
     - citonehot
-    goal_selection_strategy:
+  goal_selection_strategy:
     - future
     - final
   layer-size:
