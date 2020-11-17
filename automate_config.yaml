@@ -7,7 +7,9 @@
     - hallwayonehot
     - mit
     - mitonehot
-  goal_selection_strategy:
+    - cit
+    - citonehot
+    goal_selection_strategy:
     - future
     - final
   layer-size:
