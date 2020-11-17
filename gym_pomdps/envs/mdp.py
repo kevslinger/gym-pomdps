@@ -175,7 +175,7 @@ class HallwayMDP(MDP):
     def __init__(self, text, *, episodic, seed=None):
 
         super().__init__(text, episodic=episodic, seed=seed, lower_bound=44)
-        self.goal = self._sample_goal()
+        #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(16),  # 44 to 59
             achieved_goal=spaces.Discrete(len(self.model.states)),
@@ -191,7 +191,7 @@ class HallwayMDP(MDP):
 class MITMDP(MDP):
     def __init__(self, text, *, episodic, seed=None):
         super().__init__(text, episodic=episodic, seed=seed)
-        self.goal = self._sample_goal()
+        #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(len(self.model.states)),
             achieved_goal=spaces.Discrete(len(self.model.states)),
@@ -208,7 +208,7 @@ class CheeseMDP(MDP):
     def __init__(self, text, *, episodic, seed=None):
         super().__init__(text, episodic=episodic, seed=seed, lower_bound=8, upper_bound=11)
 
-        self.goal = self._sample_goal()
+        #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(3),
             achieved_goal=spaces.Discrete(len(self.model.states)),
@@ -220,3 +220,18 @@ class CheeseMDP(MDP):
     def _sample_goal(self):
         return np.random.choice([8, 9, 10])
 
+
+class CITMDP(MDP):
+    def __init__(self, text, *, episodic, seed=None):
+        super().__init__(text, episodic=episodic, seed=seed)
+
+        #self.goal = self._sample_goal9)
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.Discrete(len(self.model.states)),
+            achieved_goal=spaces.Discrete(len(self.model.states)),
+            observation=spaces.Discrete(len(self.model.states)),
+        ))
+
+        # Any state can be a goal for now
+        def _sample_goal(self):
+            return np.random.randint(len(self.model_states)+1)

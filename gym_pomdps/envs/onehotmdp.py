@@ -243,8 +243,27 @@ class MITOneHotMDP(OneHotMDP):
 
     def _sample_goal(self):
         # 168, 169, 170, 171
-        possible_goals = list(range(168, 172))
+        possible_goals = list(range(len(self.model.states)))
         goal = np.zeros(len(self.model.states), dtype=np.int)
         goal[np.random.choice(possible_goals)] = 1
         return goal
         
+
+class CITOneHotMDP(OneHotMDP):
+    def __init__(self, text, *, episodic, seed=None):
+        super().__init__(text, episodic=episodic, seed=seed)
+
+        #self.goal = self._sample_goal()
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.MultiBinary(len(self.model.states)),
+            achieved_goal=spaces.MultiBinary(len(self.model.states)),
+            observation=spaces.MultiBinary(len(self.model.states))
+        ))
+        self.step_cap = 50
+
+    def _sample_goal(self):
+        # 68, 69, 70, 71
+        possible_goals = list(range(len(self.model.states)))
+        goal = np.zeros(len(self.model.states), dtype=np.int)
+        goal[np.random.choice(possible_goals)] = 1
+        return goal

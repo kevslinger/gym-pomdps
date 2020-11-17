@@ -83,6 +83,17 @@ for filename in (
             entry_point='gym_pomdps.envs:CheeseOneHotMDP',
             kwargs=dict(text=text, episodic=True),
         )
+    elif filename == 'citmdp.pomdp':
+        register_mdp(
+            id=f'MDP-{name}-episodic-v0',
+            entry_point='gym_pomdps.envs:CITMDP',
+            kwargs=dict(text=text, episodic=True)
+        )
+        register_mdp(
+            id=f'MDP-citonehotmdp-episodic-v0',
+            entry_point='gym_pomdps.envs:CITOneHotMDP',
+            kwargs=dict(text=text, episodic=True)
+        )
     else:
         register_mdp(
             id=f'MDP-{name}-continuing-v{version}',
