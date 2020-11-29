@@ -38,7 +38,6 @@ def main():
 
     for dir_name in dirs:
         with open(os.path.join(dir_name, 'output.csv'), 'r') as csvfile:
-            #reader = csv.reader(csvfile, delimiter=',')
             df = pd.read_csv(csvfile, names=[EPISODES, TIMESTEPS, MEAN_REWARD, SUCCESS_RATE],
                              header=None)
 
