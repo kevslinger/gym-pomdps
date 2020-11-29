@@ -6,7 +6,7 @@ from gym.utils import seeding
 
 from rl_parsers.mdp import parse
 
-__all__ = ['MDP', 'HallwayMDP', 'MITMDP', 'CheeseMDP']
+__all__ = ['MDP', 'HallwayMDP', 'MITMDP', 'CheeseMDP', 'CITMDP']
 
 # NOTE: Each domain must extend this
 class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
@@ -89,7 +89,7 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
     def reset(self):
         self.state = self.reset_functional()
         self.steps = 0
-        self.goal = self._sample_goal().copy()
+        self.goal = self._sample_goal()
         return self._get_obs()
 
     def step(self, action):
