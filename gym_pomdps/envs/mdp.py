@@ -12,7 +12,7 @@ __all__ = ['MDP', 'HallwayMDP', 'MITMDP', 'CheeseMDP', 'CITMDP']
 class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
-    def __init__(self, text, *, episodic, seed=None, lower_bound=0, upper_bound=None):
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, potential_goals=None):
         model = parse(text)
         self.episodic = episodic
         self.seed(seed)
@@ -63,6 +63,13 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
         # self.TO = np.expand_dims(self.T, axis=-1) * self.O
         # self.EO = self.TO.sum(-2)
         # self.ER = (self.TO * self.R).sum((-2, -1))
+
+        self.dense = dense_reward
+
+        if potential_goals:
+            self.potential_goals = potential_goals
+        else:
+            self.potential_goals = list(range(self.model.states))
 
         self.state = -1
 
@@ -155,10 +162,16 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
         return state_next, reward, done, info
 
     def compute_reward(self, achieved_goal, goal, info):
-        if achieved_goal == goal:
-            return 0
+        if self.dense:
+            if achieved_goal == goal:
+                return 0
+            else:
+                return -1
         else:
-            return -1
+            if achieved_goal == goal:
+                return 1
+            else:
+                return -1
 
     def _is_success(self, achieved_goal, desired_goal):
         if achieved_goal == desired_goal:
@@ -166,15 +179,11 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
         else:
             return False
 
-    # any state can be a goal for now
-    #def _sample_goal(self):
-    #    return np.random.randint(self.lower_bound, self.upper_bound)
-
 
 class HallwayMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None):
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
 
-        super().__init__(text, episodic=episodic, seed=seed, lower_bound=44)
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(16),  # 44 to 59
@@ -189,8 +198,8 @@ class HallwayMDP(MDP):
 
 
 class MITMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(len(self.model.states)),
@@ -205,8 +214,8 @@ class MITMDP(MDP):
 
 
 class CheeseMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed, lower_bound=8, upper_bound=11)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -222,16 +231,16 @@ class CheeseMDP(MDP):
 
 
 class CITMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
 
-        #self.goal = self._sample_goal9)
+        #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(len(self.model.states)),
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
 
-        # Any state can be a goal for now
-        def _sample_goal(self):
-            return np.random.randint(len(self.model_states)+1)
+    # Any state can be a goal for now
+    def _sample_goal(self):
+        return np.random.randint(len(self.model_states)+1)
