@@ -64,7 +64,7 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
         if potential_goals:
             self.potential_goals = potential_goals
         else:
-            self.potential_goals = list(range(self.model.states))
+            self.potential_goals = list(range(len(self.model.states)))
 
         self.state = -1
 
