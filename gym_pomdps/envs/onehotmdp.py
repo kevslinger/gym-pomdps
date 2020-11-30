@@ -13,7 +13,7 @@ __all__ = ['OneHotMDP', 'HallwayOneHotMDP', 'CheeseOneHotMDP', 'MITOneHotMDP', '
 class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
-    def __init__(self, text, *, episodic, seed=None):
+    def __init__(self, text, *, episodic, seed=None, potential_goals=None):
         model = parse(text)
         self.episodic = episodic
         self.seed(seed)
@@ -39,26 +39,17 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         else:
             self.start = model.start
         self.T = model.T.transpose(1, 0, 2).copy()
-        # if model.flags['O_includes_state']:
-        #    self.O = model.O.transpose(1, 0, 2, 3).copy()
-        # else:
-        #    self.O = np.expand_dims(model.O, axis=0).repeat(
-        #        self.state_space.n, axis=0
-        #    )
-        # print(model.R)
-        # print(type(model.R))
-        # print(model.R.shape)
+
         # self.R = model.R.transpose(1, 0, 2, 3).copy()
         self.R = model.R.transpose(1, 0, 2).copy()
-        # print(self.R)
 
         if episodic:
             self.D = model.reset.T.copy()  # only if episodic
 
-        # NOTE currently elsewhere
-        # self.TO = np.expand_dims(self.T, axis=-1) * self.O
-        # self.EO = self.TO.sum(-2)
-        # self.ER = (self.TO * self.R).sum((-2, -1))
+        if potential_goals:
+            self.potential_goals = potential_goals
+        else:
+            self.potential_goals = list(range(len(model.states)))
 
         #self.state = -1
         self.state = np.zeros(len(model.states), dtype=np.int)
@@ -72,9 +63,10 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             'desired_goal': self.goal
         }
 
-
     def _sample_goal(self):
-        raise NotImplementedError
+        goal = np.zeros(len(self.model.states), dtype=np.int)
+        goal[np.random.choice(self.potential_goals)] = 1
+        return goal
 
     def get_state(self):
         return self.state
@@ -139,7 +131,6 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
         # done = self.D[state, action].item() if self.episodic else False
 
-        
         done = self._is_success(state, self.goal)
         info = {
             'is_success' : 1 if done else 0,
@@ -149,7 +140,7 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         reward = self.compute_reward(state, self.goal, info)
        
         if done:
-            #state_next = -1
+            # state_next = -1
             state_next = np.zeros(len(self.model.states), dtype=np.int)
             
         self.steps += 1
@@ -195,16 +186,16 @@ class HallwayOneHotMDP(OneHotMDP):
         ))
         self.step_cap = 15 #np.inf
 
-    def _sample_goal(self):
-        possible_goals = list(range(44, 60))
-        goal = np.zeros(len(self.model.states), dtype=np.int)
-        goal[np.random.choice(possible_goals)] = 1
-        return goal
+#    def _sample_goal(self):
+#        possible_goals = list(range(44, 60))
+#        goal = np.zeros(len(self.model.states), dtype=np.int)
+#        goal[np.random.choice(possible_goals)] = 1
+#        return goal
 
 
 class CheeseOneHotMDP(OneHotMDP):
     def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed)
+        super().__init__(text, episodic=episodic, seed=seed, potential_goals=[8, 9, 10])
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -214,19 +205,11 @@ class CheeseOneHotMDP(OneHotMDP):
         ))
         self.step_cap = 10  # np.inf
 
-    def _sample_goal(self):
-        possible_goals = [8, 9, 10]
-        goal = np.zeros(len(self.model.states), dtype=np.int)
-        goal[np.random.choice(possible_goals)] = 1
-        return goal
-        #possible_goal_1 = np.zeros(len(self.model.states), dtype=np.int)
-        #possible_goal_1[8] = 1
-        #possible_goal_2 = np.zeros(len(self.model.states), dtype=np.int)
-        #possible_goal_2[9] = 1
-        #possible_goal_3 = np.zeros(len(self.model.states), dtype=np.int)
-        #possible_goal_3[10] = 1
-        #possible_goals = [possible_goal_1, possible_goal_2, possible_goal_3]
-        #return possible_goals[np.random.choice(len(possible_goals))]
+  #  def _sample_goal(self):
+  #      possible_goals = [8, 9, 10]
+  #      goal = np.zeros(len(self.model.states), dtype=np.int)
+  #      goal[np.random.choice(possible_goals)] = 1
+  #      return goal
 
 
 class MITOneHotMDP(OneHotMDP):
@@ -241,12 +224,12 @@ class MITOneHotMDP(OneHotMDP):
         ))
         self.step_cap = 50
 
-    def _sample_goal(self):
+ #   def _sample_goal(self):
         # 168, 169, 170, 171
-        possible_goals = list(range(len(self.model.states)))
-        goal = np.zeros(len(self.model.states), dtype=np.int)
-        goal[np.random.choice(possible_goals)] = 1
-        return goal
+ #       possible_goals = list(range(len(self.model.states)))
+ #       goal = np.zeros(len(self.model.states), dtype=np.int)
+ #       goal[np.random.choice(possible_goals)] = 1
+ #       return goal
         
 
 class CITOneHotMDP(OneHotMDP):
@@ -261,9 +244,9 @@ class CITOneHotMDP(OneHotMDP):
         ))
         self.step_cap = 50
 
-    def _sample_goal(self):
-        # 68, 69, 70, 71
-        possible_goals = list(range(len(self.model.states)))
-        goal = np.zeros(len(self.model.states), dtype=np.int)
-        goal[np.random.choice(possible_goals)] = 1
-        return goal
+  #  def _sample_goal(self):
+  #      # 68, 69, 70, 71
+  #      possible_goals = list(range(len(self.model.states)))
+  #      goal = np.zeros(len(self.model.states), dtype=np.int)
+  #      goal[np.random.choice(possible_goals)] = 1
+  #      return goal
