@@ -27,7 +27,7 @@ def main():
     model_class = DQN
     env = gym.make('MDP-' + args.env + 'mdp-' + args.reward_density + '-episodic-v0')
     model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
-                seed=args.seed, tensorboard_log=args.logdir, layer_size=args.layer_size, verbose=1)
+                seed=args.seed, tensorboard_log=args.logdir, verbose=1)
     model.learn(200000)
 
 

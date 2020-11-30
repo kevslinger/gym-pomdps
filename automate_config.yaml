@@ -12,10 +12,10 @@
   goal-selection-strategy:
     - future
     - final
-  layer-size:
-    - 64
-    - 32
-    - 16
+ # layer-size:
+ #   - 64
+ #   - 32
+ #   - 16
   seed:
     [0,1,2,3,4]
   reward-density:
