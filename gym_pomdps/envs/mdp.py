@@ -30,11 +30,6 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
         self.steps = 0
         self.step_cap = 0
-        self.lower_bound = lower_bound
-        if upper_bound:
-            self.upper_bound = upper_bound
-        else:
-            self.upper_bound = len(model.states) + 1
 
         self.rewards_dict = {r: i for i, r in enumerate(np.unique(model.R))}
 
