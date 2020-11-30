@@ -1,0 +1,86 @@
+---
+All:
+  labels:
+    - final_16
+    - final_32
+    - final_64
+    - future_16
+    - future_32
+    - future_64
+  xlabel: Timestep
+  ylabel: 100-Episode Mean Return
+  colors: ['tab:purple', 'tab:cyan', 'tab:blue', 'tab:pink', 'tab:red', 'tab:orange']
+  plots:
+    Cheese:
+      title: "Cheese"
+      experiments:
+        - cheese_final_16
+        - cheese_final_32
+        - cheese_final_64
+        - cheese_future_16
+        - cheese_future_32
+        - cheese_future_64
+    Cheeseonehot:
+      title: "Cheeseonehot"
+      experiments:
+        - cheeseonehot_final_16
+        - cheeseonehot_final_32
+        - cheeseonehot_final_64
+        - cheeseonehot_future_16
+        - cheeseonehot_future_32
+        - cheeseonehot_future_64
+    Hallway:
+      title: "Hallway"
+      experiments:
+        - hallway_final_16
+        - hallway_final_32
+        - hallway_final_64
+        - hallway_future_16
+        - hallway_future_32
+        - hallway_future_64
+    Hallwayonehot:
+      title: "Hallwayonehot"
+      experiments:
+        - hallwayonehot_final_16
+        - hallwayonehot_final_32
+        - hallwayonehot_final_64
+        - hallwayonehot_future_16
+        - hallwayonehot_future_32
+        - hallwayonehot_future_64
+    MIT:
+      title: "MIT"
+      experiments:
+        - mit_final_16
+        - mit_final_32
+        - mit_final_64
+        - mit_future_16
+        - mit_future_32
+        - mit_future_64
+    MITonehot:
+      title: "MITonehot"
+      experiments:
+        - mitonehot_final_16
+        - mitonehot_final_32
+        - mitonehot_final_64
+        - mitonehot_future_16
+        - mitonehot_future_32
+        - mitonehot_future_64
+    CIT:
+      title: "CIT"
+      experiments:
+        - cit_final_16
+        - cit_final_32
+        - cit_final_64
+        - cit_future_16
+        - cit_future_32
+        - cit_future_64
+    CITonehot:
+      title: "CITonehot"
+      experiments:
+        - citonehot_final_16
+        - citonehot_final_32
+        - citonehot_final_64
+        - citonehot_future_16
+        - citonehot_future_32
+        - citonehot_future_64
+...
