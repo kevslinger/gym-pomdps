@@ -12,7 +12,7 @@ import gym_pomdps
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env', help='Environment you want to process')
-    parser.add_argument('--goal_selection_strategy', type=str, default='future',
+    parser.add_argument('--goal-selection-strategy', type=str, default='future',
                         help='Goal selection strategy (choose \'future\' or \'final\')')
     parser.add_argument('--layer-size', type=int, default=64,
                         help='Size of DQN architecture (e.g. [64, 64], [32, 32], ...')
@@ -20,12 +20,14 @@ def main():
                         help='Where to store logs')
     parser.add_argument('--seed', type=int,
                         help='Random seed')
+    parser.add_argument('--reward-density', type=str, default='dense',
+                        help='Whether to use sparse or dense rewards (Options: \'sparse\' or \'dense\'')
     args = parser.parse_args()
 
     model_class = DQN
-    env = gym.make('MDP-' + args.env + 'mdp-episodic-v0')
+    env = gym.make('MDP-' + args.env + 'mdp-' + args.reward_density + '-episodic-v0')
     model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
-                seed=args.seed, tensorboard_log=args.logdir, verbose=1)
+                seed=args.seed, tensorboard_log=args.logdir, layer_size=args.layer_size, verbose=1)
     model.learn(200000)
 
 

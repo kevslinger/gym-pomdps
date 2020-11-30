@@ -13,7 +13,7 @@ __all__ = ['OneHotMDP', 'HallwayOneHotMDP', 'CheeseOneHotMDP', 'MITOneHotMDP', '
 class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
-    def __init__(self, text, *, episodic, seed=None, potential_goals=None):
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, potential_goals=None):
         model = parse(text)
         self.episodic = episodic
         self.seed(seed)
@@ -46,6 +46,7 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         if episodic:
             self.D = model.reset.T.copy()  # only if episodic
 
+        self.dense = dense_reward
         if potential_goals:
             self.potential_goals = potential_goals
         else:
@@ -138,7 +139,8 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         }
         
         reward = self.compute_reward(state, self.goal, info)
-       
+
+
         if done:
             # state_next = -1
             state_next = np.zeros(len(self.model.states), dtype=np.int)
@@ -158,10 +160,16 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         #    return 0
         #else:
         #    return -1
-        if np.array_equal(achieved_goal, goal):
-            return 0
+        if self.dense:
+            if np.array_equal(achieved_goal, goal):
+                return 0
+            else:
+                return -1
         else:
-            return -1
+            if np.array_equal(achieved_goal, goal):
+                return 1
+            else:
+                return 0
         
     def _is_success(self, achieved_goal, desired_goal):
         #if achieved_goal == desired_goal:
@@ -175,8 +183,8 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
 class HallwayOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -194,8 +202,8 @@ class HallwayOneHotMDP(OneHotMDP):
 
 
 class CheeseOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed, potential_goals=[8, 9, 10])
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, potential_goals=[8, 9, 10])
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -213,8 +221,8 @@ class CheeseOneHotMDP(OneHotMDP):
 
 
 class MITOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -233,8 +241,8 @@ class MITOneHotMDP(OneHotMDP):
         
 
 class CITOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None):
-        super().__init__(text, episodic=episodic, seed=seed)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
