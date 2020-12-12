@@ -13,7 +13,7 @@ __all__ = ['OneHotMDP', 'HallwayOneHotMDP', 'CheeseOneHotMDP', 'MITOneHotMDP', '
 class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True, potential_goals=None):
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf, potential_goals=None):
         model = parse(text)
         self.episodic = episodic
         self.seed(seed)
@@ -30,7 +30,7 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.reward_range = model.R.min(), model.R.max()
 
         self.steps = 0
-        self.step_cap = 0
+        self.step_cap = step_cap
 
         self.rewards_dict = {r: i for i, r in enumerate(np.unique(model.R))}
 
@@ -183,8 +183,8 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
 class HallwayOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -192,7 +192,7 @@ class HallwayOneHotMDP(OneHotMDP):
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
             observation=spaces.MultiBinary(len(self.model.states))
         ))
-        self.step_cap = 15 #np.inf
+        #self.step_cap = 15 #np.inf
 
 #    def _sample_goal(self):
 #        possible_goals = list(range(44, 60))
@@ -202,8 +202,8 @@ class HallwayOneHotMDP(OneHotMDP):
 
 
 class CheeseOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, potential_goals=[8, 9, 10])
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap, potential_goals=[8, 9, 10])
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -211,7 +211,7 @@ class CheeseOneHotMDP(OneHotMDP):
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
             observation=spaces.MultiBinary(len(self.model.states))
         ))
-        self.step_cap = 10  # np.inf
+        #self.step_cap = 10  # np.inf
 
   #  def _sample_goal(self):
   #      possible_goals = [8, 9, 10]
@@ -221,8 +221,8 @@ class CheeseOneHotMDP(OneHotMDP):
 
 
 class MITOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -230,7 +230,7 @@ class MITOneHotMDP(OneHotMDP):
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
             observation=spaces.MultiBinary(len(self.model.states))
         ))
-        self.step_cap = 50
+        #self.step_cap = 50
 
  #   def _sample_goal(self):
         # 168, 169, 170, 171
@@ -241,8 +241,8 @@ class MITOneHotMDP(OneHotMDP):
         
 
 class CITOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -250,7 +250,7 @@ class CITOneHotMDP(OneHotMDP):
             achieved_goal=spaces.MultiBinary(len(self.model.states)),
             observation=spaces.MultiBinary(len(self.model.states))
         ))
-        self.step_cap = 50
+        #self.step_cap = 50
 
   #  def _sample_goal(self):
   #      # 68, 69, 70, 71

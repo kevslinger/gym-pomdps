@@ -12,7 +12,7 @@ __all__ = ['MDP', 'HallwayMDP', 'MITMDP', 'CheeseMDP', 'CITMDP']
 class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True, potential_goals=None):
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf, potential_goals=None):
         model = parse(text)
         self.episodic = episodic
         self.seed(seed)
@@ -29,7 +29,7 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.reward_range = model.R.min(), model.R.max()
 
         self.steps = 0
-        self.step_cap = 0
+        self.step_cap = step_cap
 
         self.rewards_dict = {r: i for i, r in enumerate(np.unique(model.R))}
 
@@ -176,16 +176,16 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
 class HallwayMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
 
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(16),  # 44 to 59
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = 15 #np.inf
+        #self.step_cap = 15 #np.inf
 
     # any state between 44 and 59 can be a goal (4 orientations in one of the 4 boxes.)
     def _sample_goal(self):
@@ -193,15 +193,15 @@ class HallwayMDP(MDP):
 
 
 class MITMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.Discrete(len(self.model.states)),
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = 50  #np.inf
+        #self.step_cap = 50  #np.inf
 
     # any state can be a goal for now
     def _sample_goal(self):
@@ -209,8 +209,8 @@ class MITMDP(MDP):
 
 
 class CheeseMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
@@ -218,7 +218,7 @@ class CheeseMDP(MDP):
             achieved_goal=spaces.Discrete(len(self.model.states)),
             observation=spaces.Discrete(len(self.model.states)),
         ))
-        self.step_cap = 10  # np.inf
+        #self.step_cap = 10  # np.inf
 
     # only states 9, 10, and 11 can be goals for now
     def _sample_goal(self):
@@ -226,8 +226,8 @@ class CheeseMDP(MDP):
 
 
 class CITMDP(MDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward)
+    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
