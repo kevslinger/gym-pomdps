@@ -1,6 +1,7 @@
 import re
 
 from pkg_resources import resource_exists, resource_filename, resource_listdir
+import numpy as np
 
 from .envs import *
 from .envs.registration import env_list, register, register_mdp
