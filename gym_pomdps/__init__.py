@@ -54,85 +54,85 @@ for filename in (
         register_mdp(
             id=f'MDP-hallwaymdp-dense-episodic-v{version}',
             entry_point='gym_pomdps.envs:HallwayMDP',
-            kwargs=dict(text=text, episodic=True),
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf),
         )
         register_mdp(
             id=f'MDP-hallwaymdp-sparse-episodic-v{version}',
             entry_point='gym_pomdps.envs:HallwayMDP',
-            kwargs=dict(text=text, episodic=True, dense_reward=False),
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf,  dense_reward=False, ),
         )
         register_mdp(
             id=f'MDP-hallwayonehotmdp-dense-episodic-v0',
             entry_point='gym_pomdps.envs:HallwayOneHotMDP',
-            kwargs=dict(text=text, episodic=True)
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf)
         )
         register_mdp(
             id=f'MDP-hallwayonehotmdp-sparse-episodic-v0',
             entry_point='gym_pomdps.envs:HallwayOneHotMDP',
-            kwargs=dict(text=text, episodic=True, dense_reward=False)
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf,  dense_reward=False)
         )
     elif filename == 'mitmdp.pomdp':
         register_mdp(
             id=f'MDP-mitmdp-dense-episodic-v{version}',
             entry_point='gym_pomdps.envs:MITMDP',
-            kwargs=dict(text=text, episodic=True),
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf),
         )
         register_mdp(
             id=f'MDP-mitmdp-sparse-episodic-v{version}',
             entry_point='gym_pomdps.envs:MITMDP',
-            kwargs=dict(text=text, episodic=True, dense_reward=False),
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf, dense_reward=False),
         )
         register_mdp(
             id=f'MDP-mitonehotmdp-dense-episodic-v{version}',
             entry_point='gym_pomdps.envs:MITOneHotMDP',
-            kwargs=dict(text=text, episodic=True)
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf)
         )
         register_mdp(
             id=f'MDP-mitonehotmdp-sparse-episodic-v{version}',
             entry_point='gym_pomdps.envs:MITOneHotMDP',
-            kwargs=dict(text=text, episodic=True, dense_reward=False)
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf, dense_reward=False)
         )
     elif filename == 'cheesemdp.pomdp':
         register_mdp(
             id=f'MDP-cheesemdp-dense-episodic-v{version}',
             entry_point='gym_pomdps.envs:CheeseMDP',
-            kwargs=dict(text=text, episodic=True),
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf),
         )
         register_mdp(
             id=f'MDP-cheesemdp-sparse-episodic-v{version}',
             entry_point='gym_pomdps.envs:CheeseMDP',
-            kwargs=dict(text=text, episodic=True, dense_reward=False),
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf, dense_reward=False),
         )
         register_mdp(
             id=f'MDP-cheeseonehotmdp-dense-episodic-v0',
             entry_point='gym_pomdps.envs:CheeseOneHotMDP',
-            kwargs=dict(text=text, episodic=True),
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf),
         )
         register_mdp(
             id=f'MDP-cheeseonehotmdp-sparse-episodic-v0',
             entry_point='gym_pomdps.envs:CheeseOneHotMDP',
-            kwargs=dict(text=text, episodic=True, dense_reward=False),
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf, dense_reward=False),
         )
     elif filename == 'citmdp.pomdp':
         register_mdp(
             id=f'MDP-citmdp-dense-episodic-v0',
             entry_point='gym_pomdps.envs:CITMDP',
-            kwargs=dict(text=text, episodic=True)
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf)
         )
         register_mdp(
             id=f'MDP-citmdp-sparse-episodic-v0',
             entry_point='gym_pomdps.envs:CITMDP',
-            kwargs=dict(text=text, episodic=True, dense_reward=False)
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf, dense_reward=False)
         )
         register_mdp(
             id=f'MDP-citonehotmdp-dense-episodic-v0',
             entry_point='gym_pomdps.envs:CITOneHotMDP',
-            kwargs=dict(text=text, episodic=True)
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf)
         )
         register_mdp(
             id=f'MDP-citonehotmdp-sparse-episodic-v0',
             entry_point='gym_pomdps.envs:CITOneHotMDP',
-            kwargs=dict(text=text, episodic=True, dense_reward=False)
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf, dense_reward=False)
         )
     else:
         register_mdp(
