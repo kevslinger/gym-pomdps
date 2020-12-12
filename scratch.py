@@ -3,7 +3,7 @@ import argparse
 import tensorflow as tf
 import numpy as np
 
-from stable_baselines import HER, DQN, MlpPolicy
+from stable_baselines import HER, DQN
 from stable_baselines.her import GoalSelectionStrategy, HERGoalEnvWrapper
 import gym
 import gym_pomdps
