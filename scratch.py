@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--env', help='Environment you want to process')
     parser.add_argument('--goal-selection-strategy', type=str, default='future',
                         help='Goal selection strategy (choose \'future\' or \'final\')')
-    parser.add_argument('--step-cap', type=int, default=50,
+    parser.add_argument('--step-cap', default=np.inf,
                         help='Number of timesteps the agent gets to solve the environment')
     parser.add_argument('--logdir', type=str, default='./logs',
                         help='Where to store logs')
