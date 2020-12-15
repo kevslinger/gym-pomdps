@@ -141,8 +141,8 @@ class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
         }
 
-        reward = self.compute_reward(state, self.goal, info)
-        done = self._is_success(state, self.goal)
+        reward = self.compute_reward(state_next, self.goal, info)
+        done = self._is_success(state_next, self.goal)
         if done:
             state_next = -1
 

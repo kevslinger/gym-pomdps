@@ -98,7 +98,7 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         if (np.array_equal(state, np.zeros(len(self.model.states), dtype=np.int))) != (action == -1):
             raise ValueError(f'Invalid state-action pair ({state}, {action}).')
         if (np.array_equal(state, np.zeros(len(self.model.states), dtype=np.int))) and action == -1:
-            return  np.zeros(len(self.model.states), dtype=np.int), -1, True, None
+            return np.zeros(len(self.model.states), dtype=np.int), -1, True, None
         #if (state == -1) != (action == -1):
         #    raise ValueError(f'Invalid state-action pair ({state}, {action}).')
 
@@ -131,14 +131,17 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         # reward = self.compute_reward()
 
         # done = self.D[state, action].item() if self.episodic else False
-
-        done = self._is_success(state, self.goal)
+        # TODO: Experimental, changing to state_next from state
+        #done = self._is_success(state, self.goal)
+        done = self._is_success(state_next, self.goal)
         info = {
             'is_success' : 1 if done else 0,
 
         }
-        
-        reward = self.compute_reward(state, self.goal, info)
+
+        #TODO: Experimental, changing to state_next from state
+        #reward = self.compute_reward(state, self.goal, info)
+        reward = self.compute_reward(state_next, self.goal, info)
 
 
         if done:
@@ -184,7 +187,7 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 class HallwayOneHotMDP(OneHotMDP):
     def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap, potential_goals=list(range(44, 60)))
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
