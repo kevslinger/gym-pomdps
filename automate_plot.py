@@ -14,11 +14,12 @@ STATS = (EPISODES, TIMESTEPS, MEAN_REWARD, SUCCESS_RATE)
 
 # These graphs are gonna be busyyyyyyyy
 COLORS = ('tab:cyan', 'tab:red', 'tab:purple', 'tab:blue', 'tab:orange', 'tab:green')
-ENV_NAMES = ('cheese', 'cheeseonehot', 'hallway', 'hallwayonehot', 'mit', 'mitonehot', 'cit', 'citonehot')
+#ENV_NAMES = ('cheese', 'cheeseonehot', 'hallway', 'hallwayonehot', 'mit', 'mitonehot', 'cit', 'citonehot')
+ENV_NAMES = ('cheese', 'cheeseonehot', 'hallway', 'hallwayonehot')
 GOAL_SELECTION_STRATEGIES = ('final', 'future')
 REWARD_TYPES = ('dense', 'sparse')
-#LAYER_SIZES = (16, 32, 64)
-LAYER_SIZES = (32, )
+LAYER_SIZES = (16, 32, 64)
+#LAYER_SIZES = (16, 32)
 STEP_CAPS = (10, 15, 20, 50, 100, np.inf)
 LABELS = ('10', '15', '20', '50', '100', 'np.inf')
 
@@ -38,39 +39,31 @@ def create_report():
 def parse_data(input_dir, experiment):
     # Get the list of files (we have multiple seeds, and each directory will have its own seed)
     try:
-        data_file_list = [glob.glob(os.path.join(input_dir, experiment + '_' + str(k), '*.csv'))[0] for k in range(5)]
+        data_file_list = [glob.glob(os.path.join(input_dir, experiment + '_*', '*.csv'))[0]]
     except IndexError:
-        error_count = 1
-        for i in reversed(range(5)):
-            try:
-                data_file_list = [glob.glob(os.path.join(input_dir, experiment + '_' + str(k), '*.csv'))[0] for k in range(i)]
-            except IndexError:
-                error_count += 1
-                continue
-            break
-        if error_count >= 5:
-            print(f"Error finding files for {experiment}")
-            return None
+        print(f"Error finding files for {experiment}")
+        return None
     #data_file_list = glob.glob(os.path.join(input_dir, experiment, '*.csv'))
     report = create_report()
     # Read in each file, add its data to our report, then average all the data together.
     for path in data_file_list:
-        df = pd.read_csv(path, names=list(STATS),
-                     header=None)
+        df = pd.read_csv(path, names=list(STATS), header=None)
         for stat in STATS:
             report[stat].append(df[stat])
     for stat in STATS:
         data = report.pop(stat)
 
         mean = np.mean(data, axis=0)
-
+        std = np.std(data, axis=0, ddof=1)
+        
         report[stat] = mean
+        report[stat + '.std'] = std
     return report
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('--input_dir', type=str, default='./logs')
-    parser.add_argument('--output_dir', type=str, default='./auto_plots')
+    parser.add_argument('--input-dir', type=str, default='./logs')
+    parser.add_argument('--output-dir', type=str, default='./auto_plots')
     args = parser.parse_args()
 
     if not os.path.exists(args.output_dir):
@@ -83,6 +76,10 @@ def main():
         for goal_selection_strategy in GOAL_SELECTION_STRATEGIES:
             for reward_type in REWARD_TYPES:
                 for layer_size in LAYER_SIZES:
+                    input_dir = args.input_dir + '_' + str(layer_size)
+                    output_dir = args.output_dir + '_' + str(layer_size)
+                    if not os.path.exists(output_dir):
+                        os.mkdir(output_dir)
                     # Make new figures here, plot all lines from step caps onto that figure
                     plot_name = '_'.join((env, goal_selection_strategy, reward_type))
                     min_y = np.inf
@@ -97,15 +94,14 @@ def main():
             #                            group_params['labels'],
             #                            group_params['colors']):
 
-                        data = parse_data(args.input_dir, '_'.join((plot_name, LABELS[idx])))
+                        data = parse_data(input_dir, '_'.join((plot_name, LABELS[idx])))
 
                         try:
                             x, y1, y2 = map(np.array, [data[TIMESTEPS], data[MEAN_REWARD], data[SUCCESS_RATE]])
-                        except:
+                        except TypeError:
 
                             print(f"Could not map {TIMESTEPS}/{MEAN_REWARD}/{SUCCESS_RATE} for {plot_name}")
                             continue
-
 
                         if 'sparse' in reward_type:
                             min_y = 0
@@ -120,9 +116,15 @@ def main():
                         plt.figure(i)
                         #if 'label' in plot_params:
                         label = LABELS[idx]
+                        stddev = np.asarray(data[TIMESTEPS + '.std'])
+                        stderr = stddev / np.sqrt(5) #TODO: UPDATE AS NUMBER OF TRIALS/SEEDS GOES UP
                         plt.plot(x, y1, color=COLORS[idx], label=label, linewidth=2.0)
+                        plt.fill_between(x, (y1 - stderr), (y1 + stderr), color=COLORS[idx], alpha=0.4, linewidth=0)
+                        stddev = np.asarray(data[MEAN_REWARD + '.std'])
+                        stderr = stddev / np.sqrt(5) # TODO: UPDATE AS NUMBER OF TRIALS/SEEDS GOES UP
                         plt.figure(i+1)
                         plt.plot(x, y2, color=COLORS[idx], label=label, linewidth=2.0)
+                        plt.fill_between(x, (y2 - stderr), (y2 + stderr), color=COLORS[idx], alpha=0.4, linewidth=0)
 
             #if 'xlabel' in plot_params:
             #    plt.xlabel(plot_params['xlabel'])
@@ -145,13 +147,12 @@ def main():
                     plt.ylim([min_y, max_y])
                     plt.grid(True)
                     plt.legend()
-                    plt.savefig(os.path.join(args.output_dir, plot_name + '_reward'))
+                    plt.savefig(os.path.join(output_dir, plot_name + '_reward'))
 
             #if 'xlabel' in plot_params:
             #    plt.xlabel(plot_params['xlabel'])
             #else:
             #    plt.xlabel(group_params['xlabel'])
-
 
                     plt.figure(i+1)
                     #plt.title(plot_params['title'])
@@ -163,7 +164,7 @@ def main():
                     plt.ylim([0, 1.0])
                     plt.grid(True)
                     plt.legend()
-                    plt.savefig(os.path.join(args.output_dir, plot_name + '_success'))
+                    plt.savefig(os.path.join(output_dir, plot_name + '_success'))
                     i += 2
 
 

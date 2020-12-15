@@ -16,7 +16,7 @@ def main():
                         help='Goal selection strategy (choose \'future\' or \'final\')')
     parser.add_argument('--step-cap', default=np.inf,
                         help='Number of timesteps the agent gets to solve the environment')
-    parser.add_argument('--logdir', type=str, default='./logs',
+    parser.add_argument('--logdir', type=str, default='logs',
                         help='Where to store logs')
     parser.add_argument('--seed', type=int,
                         help='Random seed')
@@ -25,9 +25,9 @@ def main():
     args = parser.parse_args()
 
     model_class = DQN
-    env = gym.make('MDP-' + args.env + 'mdp-' + args.reward_density + '-episodic-v0', step_cap=args.step_cap)
+    env = gym.make('MDP-' + args.env + 'mdp-' + args.reward_density + '-episodic-v0', step_cap=float(args.step_cap))
     model = HER('MlpPolicy', env, model_class, n_sampled_goal=4, goal_selection_strategy=args.goal_selection_strategy,
-                seed=args.seed, tensorboard_log=args.logdir, verbose=1)
+                seed=args.seed, logdir=args.logdir, verbose=1)
     model.learn(200000)
 
 

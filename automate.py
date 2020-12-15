@@ -123,6 +123,18 @@ if __name__ == '__main__':
     output_dir = args.output_dir
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
+    # Change cap size and layer size and goal_selection_strategy  in yaml file. Keep log dir here.
+    ENV_DEFAULTS = {
+        'cheese': f'--logdir {output_dir}/cheese',
+        'cheeseonehot': f'--logdir {output_dir}/cheeseonehot',
+        'hallway': f'--logdir {output_dir}/hallway',
+        'hallwayonehot': f'--logdir {output_dir}/hallwayonehot',
+        'mit': f'--logdir {output_dir}/mit',
+        'mitonehot': f'--logdir {output_dir}/mitonehot',
+        'cit': f'--logdir {output_dir}/citonehot',
+    }
+
+
 
     with open('automate_config.yaml', 'r') as fh:
         config = yaml.safe_load(fh)
