@@ -5,10 +5,10 @@
     - cheeseonehot
     - hallway
     - hallwayonehot
-    - mit
-    - mitonehot
-    - cit
-    - citonehot
+    #- mit
+    #- mitonehot
+    #- cit
+    #- citonehot
   goal-selection-strategy:
     - future
     - final
