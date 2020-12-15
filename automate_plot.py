@@ -116,15 +116,17 @@ def main():
                         plt.figure(i)
                         #if 'label' in plot_params:
                         label = LABELS[idx]
-                        stddev = np.asarray(data[TIMESTEPS + '.std'])
+                        stddev = np.asarray(data[MEAN_REWARD + '.std'])
                         stderr = stddev / np.sqrt(5) #TODO: UPDATE AS NUMBER OF TRIALS/SEEDS GOES UP
                         plt.plot(x, y1, color=COLORS[idx], label=label, linewidth=2.0)
-                        plt.fill_between(x, (y1 - stderr), (y1 + stderr), color=COLORS[idx], alpha=0.4, linewidth=0)
-                        stddev = np.asarray(data[MEAN_REWARD + '.std'])
+                        #plt.fill_between(x, (y1 - stderr), (y1 + stderr), color=COLORS[idx], alpha=0.4, linewidth=0)
+                        stddev = np.asarray(data[SUCCESS_RATE + '.std'])
+                        #print(stddev)
                         stderr = stddev / np.sqrt(5) # TODO: UPDATE AS NUMBER OF TRIALS/SEEDS GOES UP
+                        #print(stderr)
                         plt.figure(i+1)
                         plt.plot(x, y2, color=COLORS[idx], label=label, linewidth=2.0)
-                        plt.fill_between(x, (y2 - stderr), (y2 + stderr), color=COLORS[idx], alpha=0.4, linewidth=0)
+                        #plt.fill_between(x, (y2 - stderr), (y2 + stderr), color=COLORS[idx], alpha=0.4, linewidth=0)
 
             #if 'xlabel' in plot_params:
             #    plt.xlabel(plot_params['xlabel'])
