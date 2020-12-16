@@ -14,13 +14,16 @@ STATS = (EPISODES, TIMESTEPS, MEAN_REWARD, SUCCESS_RATE)
 
 # These graphs are gonna be busyyyyyyyy
 COLORS = ('tab:cyan', 'tab:red', 'tab:purple', 'tab:blue', 'tab:orange', 'tab:green')
-#ENV_NAMES = ('cheese', 'cheeseonehot', 'hallway', 'hallwayonehot', 'mit', 'mitonehot', 'cit', 'citonehot')
-ENV_NAMES = ('cheese', 'cheeseonehot', 'hallway', 'hallwayonehot')
+ENV_NAMES = ('cheese', 'cheeseonehot', 'hallway', 'hallwayonehot', 'mit', 'mitonehot', 'cit', 'citonehot')
+#ENV_NAMES = ('cheese', 'cheeseonehot', 'hallway', 'hallwayonehot')
+#ENV_NAMES = ('cheeseonehot', 'hallwayonehot',)# 'mitonehot')
 GOAL_SELECTION_STRATEGIES = ('final', 'future')
+#GOAL_SELECTION_STRATEGIES = ('future',)
 REWARD_TYPES = ('dense', 'sparse')
+#REWARD_TYPES = ('dense',)
 LAYER_SIZES = (16, 32, 64)
 #LAYER_SIZES = (16, 32)
-STEP_CAPS = (10, 15, 20, 50, 100, np.inf)
+STEP_CAPS = (10, 15, 20, 50, 100)#, np.inf)
 LABELS = ('10', '15', '20', '50', '100', 'np.inf')
 
 
@@ -39,7 +42,7 @@ def create_report():
 def parse_data(input_dir, experiment):
     # Get the list of files (we have multiple seeds, and each directory will have its own seed)
     try:
-        data_file_list = [glob.glob(os.path.join(input_dir, experiment + '_*', '*.csv'))[0]]
+        data_file_list = glob.glob(os.path.join(input_dir, experiment + '_*', '*.csv'))
     except IndexError:
         print(f"Error finding files for {experiment}")
         return None
@@ -54,10 +57,10 @@ def parse_data(input_dir, experiment):
         data = report.pop(stat)
 
         mean = np.mean(data, axis=0)
-        std = np.std(data, axis=0, ddof=1)
+        #std = np.std(data, axis=0, ddof=1)
         
         report[stat] = mean
-        report[stat + '.std'] = std
+        #report[stat + '.std'] = std
     return report
 
 def main():
@@ -95,7 +98,7 @@ def main():
             #                            group_params['colors']):
 
                         data = parse_data(input_dir, '_'.join((plot_name, LABELS[idx])))
-
+                        #print(data)
                         try:
                             x, y1, y2 = map(np.array, [data[TIMESTEPS], data[MEAN_REWARD], data[SUCCESS_RATE]])
                         except TypeError:
@@ -109,20 +112,25 @@ def main():
                             #max_y = max(max_y, max(data[MEAN_REWARD] + (0.05 - max(data[MEAN_REWARD]) % 0.05)))
                             #plt.ylim([0, max(data[MEAN_REWARD]) + (0.05 - max(data[MEAN_REWARD]) % 0.05)])
                         else:
-                            min_y = min(min_y, min(data[MEAN_REWARD] - (2 - min(data[MEAN_REWARD]) % 2)))
-                            max_y = max(max_y, max(data[MEAN_REWARD] + (2 - max(data[MEAN_REWARD]) % 2)))
-                            #plt.ylim([min(data[MEAN_REWARD]) - (5 - min(data[MEAN_REWARD]) % 5), ])
-
+                            #print(y1)
+                            #print(plot_name)
+                            try:
+                                min_y = min(min_y, min(data[MEAN_REWARD] - (2 - min(data[MEAN_REWARD]) % 2)))
+                                max_y = max(max_y, max(data[MEAN_REWARD] + (2 - max(data[MEAN_REWARD]) % 2)))
+                                #plt.ylim([min(data[MEAN_REWARD]) - (5 - min(data[MEAN_REWARD]) % 5), ])
+                            except TypeError:
+                                print(f"Could not assign maxes for {step_cap} in {plot_name}")
+                                continue
                         plt.figure(i)
                         #if 'label' in plot_params:
                         label = LABELS[idx]
-                        stddev = np.asarray(data[MEAN_REWARD + '.std'])
-                        stderr = stddev / np.sqrt(5) #TODO: UPDATE AS NUMBER OF TRIALS/SEEDS GOES UP
+                        #stddev = np.asarray(data[MEAN_REWARD + '.std'])
+                        #stderr = stddev / np.sqrt(5) #TODO: UPDATE AS NUMBER OF TRIALS/SEEDS GOES UP
                         plt.plot(x, y1, color=COLORS[idx], label=label, linewidth=2.0)
                         #plt.fill_between(x, (y1 - stderr), (y1 + stderr), color=COLORS[idx], alpha=0.4, linewidth=0)
-                        stddev = np.asarray(data[SUCCESS_RATE + '.std'])
+                        #stddev = np.asarray(data[SUCCESS_RATE + '.std'])
                         #print(stddev)
-                        stderr = stddev / np.sqrt(5) # TODO: UPDATE AS NUMBER OF TRIALS/SEEDS GOES UP
+                        #stderr = stddev / np.sqrt(5) # TODO: UPDATE AS NUMBER OF TRIALS/SEEDS GOES UP
                         #print(stderr)
                         plt.figure(i+1)
                         plt.plot(x, y2, color=COLORS[idx], label=label, linewidth=2.0)
