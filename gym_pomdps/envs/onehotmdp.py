@@ -225,7 +225,8 @@ class CheeseOneHotMDP(OneHotMDP):
 
 class MITOneHotMDP(OneHotMDP):
     def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
+        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap,
+                         potential_goals=[52, 53, 54, 55, 100, 101, 102, 103, 168, 169, 170, 171, 196, 197, 198, 199])
 
         #self.goal = self._sample_goal()
         self.observation_space = spaces.Dict(dict(
