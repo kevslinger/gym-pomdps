@@ -23,8 +23,8 @@ REWARD_TYPES = ('dense', 'sparse')
 #REWARD_TYPES = ('dense',)
 LAYER_SIZES = (16, 32, 64)
 #LAYER_SIZES = (16, 32)
-STEP_CAPS = (10, 15, 20, 50, 100)#, np.inf)
-LABELS = ('10', '15', '20', '50', '100', 'np.inf')
+STEP_CAPS = (10, 15, 20, 50, 100, 500)
+LABELS = ('10', '15', '20', '50', '100', '500')
 
 
 def get_config():
