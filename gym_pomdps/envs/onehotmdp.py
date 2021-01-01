@@ -106,6 +106,7 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         #    return -1, -1, 0.0, True, None
 
         #assert 0 <= state < self.state_space.n
+        assert len(state) == len(self.model.states)
         assert 0 <= action < self.action_space.n
 
         #state_next = (
@@ -158,18 +159,18 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         # return state_next, obs, reward, done, info
         return state_next, reward, done, info
 
-    def compute_reward(self, achieved_goal, goal, info):
+    def compute_reward(self, achieved_goal, desired_goal, info):
         #if achieved_goal == goal:
         #    return 0
         #else:
         #    return -1
         if self.dense:
-            if np.array_equal(achieved_goal, goal):
+            if np.array_equal(achieved_goal, desired_goal):
                 return 0
             else:
                 return -1
         else:
-            if np.array_equal(achieved_goal, goal):
+            if np.array_equal(achieved_goal, desired_goal):
                 return 1
             else:
                 return 0

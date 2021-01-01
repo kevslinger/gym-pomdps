@@ -50,13 +50,22 @@ for filename in (
         entry_point='gym_pomdps.envs:POMDP',
         kwargs=dict(text=text, episodic=True),
     )
-
+    if filename == 'cheese_goal.pomdp':
+        register(
+        id=f'POMDP-Goal-cheeseonehot-v{version}',
+        entry_point='gym_pomdps.envs:CheeseOneHotPOMDP',
+        kwargs=dict(text=text, episodic=True, step_cap=np.inf),
+        )
+    # Okay this is gross but it's what I'm working with right now.
     if filename == 'hallwaymdp.pomdp':
+        # Simpler name to help on the old fingers, ya feel? This is the same as
+        # MDP-hallwaymdp-dense-episodic-v0
         register_mdp(
             id=f'MDP-hallway-v{version}',
             entry_point='gym_pomdps.envs:HallwayMDP',
             kwargs=dict(text=text, episodic=True, step_cap=np.inf),
         )
+        # integer version of Hallway, dense and sparse.
         register_mdp(
             id=f'MDP-hallwaymdp-dense-episodic-v{version}',
             entry_point='gym_pomdps.envs:HallwayMDP',
@@ -67,6 +76,7 @@ for filename in (
             entry_point='gym_pomdps.envs:HallwayMDP',
             kwargs=dict(text=text, episodic=True, step_cap=np.inf,  dense_reward=False),
         )
+        # One hot version of Hallway
         register_mdp(
             id=f'MDP-hallwayonehot-v0',
             entry_point='gym_pomdps.envs:HallwayOneHotMDP',
