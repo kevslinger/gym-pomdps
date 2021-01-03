@@ -5,7 +5,7 @@ from gym.utils import seeding
 
 from rl_parsers.pomdp import parse as pomdp_parse
 
-__all__ = ['OneHotPOMDP', 'CheeseOneHotPOMDP']
+__all__ = ['OneHotPOMDP', 'CheeseOneHotPOMDP', 'HallwayOneHotPOMDP']
 
 
 class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
@@ -200,7 +200,38 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 class CheeseOneHotPOMDP(OneHotPOMDP):
     def __init__(self, text, *, episodic, seed=None, step_cap=np.inf):
-        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=[8, 9, 10], start=[1/3, 0, 1/3, 0, 1/3, 0, 0, 0, 0, 0, 0], start_to_obs={0 : [1, 0, 0, 0, 0, 0, 0, 0], 2: [0, 0, 1, 0, 0, 0, 0, 0], 4: [0, 0, 0, 1, 0, 0, 0, 0]})
+        potential_goals = [8, 9, 10]
+        start = [1/3, 0, 1/3, 0, 1/3, 0, 0, 0, 0, 0, 0]
+        start_to_obs = {
+            0 : [1, 0, 0, 0, 0, 0, 0, 0],
+            2: [0, 0, 1, 0, 0, 0, 0, 0],
+            4: [0, 0, 0, 1, 0, 0, 0, 0]
+        }
+        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start=start, start_to_obs=start_to_obs)
+
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.MultiBinary(len(self.model.states)),
+            achieved_goal=spaces.MultiBinary(len(self.model.states)),
+            observation=spaces.MultiBinary(len(self.model.observations))
+        ))
+
+
+class HallwayOneHotPOMDP(OneHotPOMDP):
+    def __init__(self, text, *, episodic, seed=None, step_cap=np.inf):
+        start_states = [0, 1, 2, 3, 40, 41, 42, 43]
+        start = np.zeros(60, dtype=np.float32)
+        start[start_states] = 1/len(start_states)
+        start_to_obs = {
+            0 : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            1: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            2: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            3: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            40: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            41: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            42: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            43: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+        }
+        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=list(range(44, 60)), start_to_obs=start_to_obs)
 
         self.observation_space = spaces.Dict(dict(
             desired_goal=spaces.MultiBinary(len(self.model.states)),

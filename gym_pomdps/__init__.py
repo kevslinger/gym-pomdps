@@ -56,6 +56,12 @@ for filename in (
         entry_point='gym_pomdps.envs:CheeseOneHotPOMDP',
         kwargs=dict(text=text, episodic=True, step_cap=np.inf),
         )
+    if filename == 'hallway_goal.pomdp':
+        register(
+            id=f'POMDP-Goal-hallwayonehot-v{version}',
+            entry_point='gym_pomdps.envs:HallwayOneHotPOMDP',
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf)
+        )
     # Okay this is gross but it's what I'm working with right now.
     if filename == 'hallwaymdp.pomdp':
         # Simpler name to help on the old fingers, ya feel? This is the same as
