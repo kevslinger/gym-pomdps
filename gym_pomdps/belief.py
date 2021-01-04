@@ -16,8 +16,8 @@ def belief_init(env: gym.Env, shape=None) -> np.array:
     :rtype:  numpy.ndarray (*shape, |S|) batch array of belief-states
     """
 
-    if not isinstance(env.unwrapped, POMDP):
-        raise TypeError('env is not a gym_pomdps.POMDP')
+    #if not isinstance(env.unwrapped, POMDP):
+    #    raise TypeError('env is not a gym_pomdps.POMDP')
 
     if shape is None:
         shape = ()
@@ -37,8 +37,8 @@ def belief_step(
     :rtype:  numpy.array (*, |S|) batch array of next belief-states
     """
 
-    if not isinstance(env.unwrapped, POMDP):
-        raise TypeError('env is not a gym_pomdps.POMDP')
+    #if not isinstance(env.unwrapped, POMDP):
+    #    raise TypeError('env is not a gym_pomdps.POMDP')
 
     b = np.asarray(b)
     a = np.asarray(a)
@@ -71,8 +71,8 @@ def expected_reward(env: gym.Env, b: np.ndarray, a: np.ndarray) -> np.ndarray:
     :rtype: np.ndarray  (*,) batch array of expected rewards
     """
 
-    if not isinstance(env.unwrapped, POMDP):
-        raise TypeError('env is not a gym_pomdps.POMDP')
+    #if not isinstance(env.unwrapped, POMDP):
+    #    raise TypeError('env is not a gym_pomdps.POMDP')
 
     b = np.asarray(b)
     a = np.asarray(a)
@@ -98,8 +98,8 @@ def expected_obs(env: gym.Env, b: np.ndarray, a: np.ndarray) -> np.ndarray:
     :rtype: np.ndarray  (*, O) batch array of observation probabilities
     """
 
-    if not isinstance(env.unwrapped, POMDP):
-        raise TypeError('env is not a gym_pomdps.POMDP')
+    #if not isinstance(env.unwrapped, POMDP):
+    #    raise TypeError('env is not a gym_pomdps.POMDP')
 
     b = np.asarray(b)
     a = np.asarray(a)
@@ -128,8 +128,8 @@ def _plausible(
     :rtype: np.ndarray  (*,) batch array of bools
     """
 
-    if not isinstance(env.unwrapped, POMDP):
-        raise TypeError('env is not a gym_pomdps.POMDP')
+    #if not isinstance(env.unwrapped, POMDP):
+    #    raise TypeError('env is not a gym_pomdps.POMDP')
 
     p_sa_o = _P_SA_O(env)[:, a, o]
     return np.einsum('ib,bi->b', p_sa_o, b) > 0.0
