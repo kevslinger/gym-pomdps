@@ -75,9 +75,13 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         obs = self.get_obs()
         achieved_goal = self.get_state()
         return {
+        #    'observation': obs,
+        #    'achieved_goal': achieved_goal,
+        #    'desired_goal': self.get_goal()
+        # We're gonna go with obs, desired, achieved for now
             'observation': obs,
-            'achieved_goal': achieved_goal,
-            'desired_goal': self.get_goal()
+            'desired_goal': self.get_goal(),
+            'achieved_goal': achieved_goal
         }
 
     def _sample_goal(self):
@@ -111,9 +115,13 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.goal = self._sample_goal().copy()
         self.obs = self.get_starting_obs(self.state)
         obs = {
+        #    'observation': self.get_obs(),
+        #    'achieved_goal': self.get_state(),
+        #    'desired_goal': self.get_goal()
+        # Gonna for with obs, desired, achieved
             'observation': self.get_obs(),
-            'achieved_goal': self.get_state(),
-            'desired_goal': self.get_goal()
+            'desired_goal': self.get_goal(),
+            'achieved_goal': self.get_state()
         }
         return obs
 
