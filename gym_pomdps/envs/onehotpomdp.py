@@ -65,7 +65,8 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         if potential_goals:
             self.potential_goals = potential_goals
         else:
-            self.potential_goals = list(range(len(model.states)))
+            #self.potential_goals = list(range(len(model.states)))
+            self.potential_goals = list(range(len(model.observations)))
         if start_to_obs:
             self.start_to_obs = start_to_obs
         else:
@@ -73,7 +74,7 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
     def _get_obs(self):
         obs = self.get_obs()
-        achieved_goal = self.get_state()
+        achieved_goal = self.get_obs()
         return {
         #    'observation': obs,
         #    'achieved_goal': achieved_goal,
@@ -85,7 +86,9 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         }
 
     def _sample_goal(self):
-        goal = np.zeros(len(self.model.states), dtype=np.int)
+        #goal = np.zeros(len(self.model.states), dtype=np.int)
+        #goal[np.random.choice(self.potential_goals)] = 1
+        goal = np.zeros(len(self.model.observations), dtype=np.int)
         goal[np.random.choice(self.potential_goals)] = 1
         return goal
 
@@ -118,10 +121,10 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         #    'observation': self.get_obs(),
         #    'achieved_goal': self.get_state(),
         #    'desired_goal': self.get_goal()
-        # Gonna for with obs, desired, achieved
+        # removing state from obs.
             'observation': self.get_obs(),
-            'desired_goal': self.get_goal(),
-            'achieved_goal': self.get_state()
+            'achieved_goal': self.get_obs(),
+            'desired_goal': self.get_goal()
         }
         return obs
 
@@ -142,7 +145,7 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
         if (np.array_equal(state, np.zeros(len(self.model.states), dtype=np.int))) and action == -1:
         #if state == -1 and action == -1:
-            return np.zeros(len(self.model.states), dtype=np.int), -1, True, None
+            return np.zeros(len(self.model.states), dtype=np.int), np.zeros(len(self.mode.observations), dtype=np.int), -1, True, None
             #return -1, -1, 0.0, True, None
 
         #assert 0 <= state < self.state_space.n
@@ -165,15 +168,16 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         #     self.observation_space.n,
         # )
 
-
-        done = self._is_success(state_next, self.goal)
+        #done = self._is_success(state_next, self.goal)
+        done = self._is_success(obs, self.goal)
         info = {
             'is_success': 1 if done else 0,
         }
         
         #reward = self.R[state, action, state_next, obs].item()
-        reward = self.compute_reward(state_next, self.goal, info)
-        
+        #reward = self.compute_reward(state_next, self.goal, info)
+        reward = self.compute_reward(obs, self.goal, info)
+
         #done = self.D[state, action].item() if self.episodic else False
         if done:
             #state_next = -1
@@ -208,7 +212,8 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 class CheeseOneHotPOMDP(OneHotPOMDP):
     def __init__(self, text, *, episodic, seed=None, step_cap=np.inf):
-        potential_goals = [8, 9, 10]
+        # Goals must be observations
+        potential_goals = [5, 6, 7]
         start = None
         #start = [1/3, 0, 1/3, 0, 1/3, 0, 0, 0, 0, 0, 0]
         start_to_obs = {
@@ -219,8 +224,8 @@ class CheeseOneHotPOMDP(OneHotPOMDP):
         super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start=start, start_to_obs=start_to_obs)
 
         self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.states)),
-            achieved_goal=spaces.MultiBinary(len(self.model.states)),
+            desired_goal=spaces.MultiBinary(len(self.model.observations)),
+            achieved_goal=spaces.MultiBinary(len(self.model.observations)),
             observation=spaces.MultiBinary(len(self.model.observations))
         ))
 
@@ -240,10 +245,12 @@ class HallwayOneHotPOMDP(OneHotPOMDP):
             42: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             43: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         }
-        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=list(range(44, 60)), start_to_obs=start_to_obs)
+        #potential_goals = list(range(44, 60))
+        potential_goals = list(range(20, 36))
+        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start_to_obs=start_to_obs)
 
         self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.states)),
-            achieved_goal=spaces.MultiBinary(len(self.model.states)),
+            desired_goal=spaces.MultiBinary(len(self.model.observations)),
+            achieved_goal=spaces.MultiBinary(len(self.model.observations)),
             observation=spaces.MultiBinary(len(self.model.observations))
         ))
