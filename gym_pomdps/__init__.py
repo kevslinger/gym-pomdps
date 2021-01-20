@@ -39,27 +39,37 @@ for filename in (
     with open(path) as f:
         text = f.read()
 
-    register(
-        id=f'POMDP-{name}-continuing-v{version}',
-        entry_point='gym_pomdps.envs:POMDP',
-        kwargs=dict(text=text, episodic=False),
-    )
+    #register(
+    #    id=f'POMDP-{name}-continuing-v{version}',
+    #    entry_point='gym_pomdps.envs:POMDP',
+    #    kwargs=dict(text=text, episodic=False),
+    #)
 
-    register(
-        id=f'POMDP-{name}-episodic-v{version}',
-        entry_point='gym_pomdps.envs:POMDP',
-        kwargs=dict(text=text, episodic=True),
-    )
+    #register(
+    #    id=f'POMDP-{name}-episodic-v{version}',
+    #    entry_point='gym_pomdps.envs:POMDP',
+    #    kwargs=dict(text=text, episodic=True),
+    #)
     if filename == 'cheese_goal.pomdp':
         register(
         id=f'POMDP-Goal-cheeseonehot-v{version}',
         entry_point='gym_pomdps.envs:CheeseOneHotPOMDP',
         kwargs=dict(text=text, episodic=True, step_cap=np.inf),
         )
+        register(
+            id=f'POMDP-Goalconcat-cheeseonehot-v{version}',
+            entry_point='gym_pomdps.envs:CheeseOneHotConcatPOMDP',
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf),
+        )
     if filename == 'hallway_goal.pomdp':
         register(
             id=f'POMDP-Goal-hallwayonehot-v{version}',
             entry_point='gym_pomdps.envs:HallwayOneHotPOMDP',
+            kwargs=dict(text=text, episodic=True, step_cap=np.inf)
+        )
+        register(
+            id=f'POMDP-Goalconcat-hallwayonehot-v{version}',
+            entry_point='gym_pomdps.envs:HallwayOneHotConcatPOMDP',
             kwargs=dict(text=text, episodic=True, step_cap=np.inf)
         )
     # Okay this is gross but it's what I'm working with right now.
@@ -191,16 +201,16 @@ for filename in (
             entry_point='gym_pomdps.envs:CITOneHotMDP',
             kwargs=dict(text=text, episodic=True, step_cap=np.inf, dense_reward=False)
         )
-    else:
-        register_mdp(
-            id=f'MDP-{name}-continuing-v{version}',
-            entry_point='gym_pomdps.envs:MDP',
-            kwargs=dict(text=text, episodic=False),
-        )
-        register_mdp(
-            id=f'MDP-{name}-episodic-v{version}',
-            entry_point='gym_pomdps.envs:MDP',
-            kwargs=dict(text=text, episodic=True),
-        )
+    #else:
+    #    register_mdp(
+    #        id=f'MDP-{name}-continuing-v{version}',
+    #        entry_point='gym_pomdps.envs:MDP',
+    #        kwargs=dict(text=text, episodic=False),
+    #    )
+    #    register_mdp(
+    #        id=f'MDP-{name}-episodic-v{version}',
+    #        entry_point='gym_pomdps.envs:MDP',
+    #        kwargs=dict(text=text, episodic=True),
+    #    )
 
 
