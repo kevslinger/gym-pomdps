@@ -6,7 +6,7 @@ from gym.utils import seeding
 
 from rl_parsers.mdp import parse
 
-__all__ = ['MDP', 'HallwayMDP', 'MITMDP', 'CheeseMDP', 'CITMDP']
+__all__ = ['MDP', 'HallwayMDP', 'MitMDP', 'CheeseMDP', 'CitMDP']
 
 # NOTE: Each domain must extend this
 class MDP(gym.GoalEnv):  # pylint: disable=abstract-method
@@ -192,7 +192,7 @@ class HallwayMDP(MDP):
         return np.random.randint(44, len(self.model.states)+1)
 
 
-class MITMDP(MDP):
+class MitMDP(MDP):
     def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
         super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
         #self.goal = self._sample_goal()
@@ -225,7 +225,7 @@ class CheeseMDP(MDP):
         return np.random.choice([8, 9, 10])
 
 
-class CITMDP(MDP):
+class CitMDP(MDP):
     def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
         super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
 

@@ -8,7 +8,8 @@ from rl_parsers.pomdp import parse as pomdp_parse
 __all__ = ['OneHotConcatPOMDP', 'CheeseOneHotConcatPOMDP', 'HallwayOneHotConcatPOMDP']
 
 ELEMENTS = ['observation', 'achieved_goal', 'desired_goal']
-
+#update to only have one desired_goal
+#ELEMENTS = ['observation', 'achieved_goal']
 
 class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by POMDP file."""
@@ -26,7 +27,7 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.model = model
         self.discount = model.discount
         # Number of observations to concat
-        self.concat_length = 2
+        self.concat_length = 4
         self.state_space = spaces.Discrete(len(model.states))
         self.action_space = spaces.Discrete(len(model.actions))
         self.obs_space = spaces.Discrete(len(model.observations))
@@ -114,9 +115,15 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         # Although, right now we'll actually have 3 separate parts:
         # [obs1, obs2, obs3, obs4], [ag1, ag2, ag3, ag4], [dg1, dg2, dg3, dg4]
         for element_name, element in zip(ELEMENTS, [obs, achieved_goal, desired_goal]):
+        #for element_name, element in zip(ELEMENTS, [obs, achieved_goal]):
+            # UPDATE: now we only use 1 desired_goal, instead of having the same one 4 times.
+            #if element_name == 'desired_goal':
+                #self.history_buffer[element_name] = desired_goal
+            #else:
             self.history_buffer[element_name] = np.append(element,
                                                      self.history_buffer[element_name][:len(self.history_buffer[element_name]) -
-                                                                                   self.obs_space.n])
+                                                                               self.obs_space.n])
+        #self.history_buffer['desired_goal'] = desired_goal
         return self.history_buffer
 
     def get_concatenated_observation(self):
@@ -153,8 +160,10 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         #    'desired_goal': self.get_goal()
         # }
         for element_name, element in zip(ELEMENTS, [obs, achieved_goal, desired_goal]):
+        #for element_name, element in zip(ELEMENTS, [obs, achieved_goal]):
             self.history_buffer[element_name][:] = 0
             self.history_buffer[element_name][:self.obs_space.n] = element
+        #self.history_buffer['desired_goal'] = desired_goal
         return self.history_buffer
 
     def step(self, action):
@@ -263,7 +272,11 @@ class CheeseOneHotConcatPOMDP(OneHotConcatPOMDP):
         # Create a history of concat_length observations (times 3 since we have 3 components of our observation)
         self.history_buffer = dict()
         for element in ['observation', 'achieved_goal', 'desired_goal']:
-            self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)
+            # UPDATE: use only one desired_goal
+            #if element == 'desired_goal':
+            #    self.history_buffer[element] = np.zeros(len(self.model.observations), dtype=np.int)
+            #else:
+                self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)
 
 
 class HallwayOneHotConcatPOMDP(OneHotConcatPOMDP):
@@ -302,4 +315,8 @@ class HallwayOneHotConcatPOMDP(OneHotConcatPOMDP):
         # Create a history of concat_length observations (times 3 since we have 3 components of our observation)
         self.history_buffer = dict()
         for element in ['observation', 'achieved_goal', 'desired_goal']:
-            self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)
+            # UPDATE: use only one desired_goal
+            #if element == 'desired_goal':
+            #    self.history_buffer[element] = np.zeros(len(self.model.observations), dtype=np.int)
+            #else:
+                self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)
