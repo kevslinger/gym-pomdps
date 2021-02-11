@@ -14,11 +14,10 @@ ELEMENTS = ['observation', 'achieved_goal', 'desired_goal']
 class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by POMDP file."""
 
-    def __init__(self, text, *, episodic, seed=None, step_cap=np.inf, potential_goals=None, start=None,
+    def __init__(self, text, *, seed=None, step_cap=np.inf, potential_goals=None, start=None,
                  start_to_obs=None):
         # print('text is {}'.format(text))
         model = pomdp_parse(text)
-        self.episodic = episodic
         self.seed(seed)
 
         if model.values == 'cost':
@@ -52,9 +51,6 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             )
         self.R = model.R.transpose(1, 0, 2, 3).copy()
 
-        if episodic:
-            self.D = model.reset.T.copy()  # only if episodic
-
         # NOTE currently elsewhere
         # self.TO = np.expand_dims(self.T, axis=-1) * self.O
         # self.EO = self.TO.sum(-2)
@@ -78,6 +74,18 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         else:
             self.start_to_obs = np.identity(len(model.observations))
         self.history_buffer = None
+
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
+            achieved_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
+            observation=spaces.MultiBinary(len(self.model.observations) * self.concat_length)
+        ))
+        # Create a history of concat_length observations (times 3 since we have 3 components of our observation)
+        self.history_buffer = dict()
+        for element in ['observation', 'achieved_goal', 'desired_goal']:
+            self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)
+
+
 
     def _get_obs(self):
         obs = self.get_obs()
@@ -251,7 +259,7 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
 class CheeseOneHotConcatPOMDP(OneHotConcatPOMDP):
-    def __init__(self, text, *, episodic, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
         # Goals must be observations
         potential_goals = [5, 6, 7]
         start = None
@@ -261,26 +269,22 @@ class CheeseOneHotConcatPOMDP(OneHotConcatPOMDP):
             2: [0, 0, 1, 0, 0, 0, 0, 0],
             4: [0, 0, 0, 1, 0, 0, 0, 0]
         }
-        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals,
+        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=potential_goals,
                          start=start, start_to_obs=start_to_obs)
 
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
-            achieved_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
-            observation=spaces.MultiBinary(len(self.model.observations) * self.concat_length)
-        ))
+        #self.observation_space = spaces.Dict(dict(
+        #    desired_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
+        #    achieved_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
+        #    observation=spaces.MultiBinary(len(self.model.observations) * self.concat_length)
+        #))
         # Create a history of concat_length observations (times 3 since we have 3 components of our observation)
-        self.history_buffer = dict()
-        for element in ['observation', 'achieved_goal', 'desired_goal']:
-            # UPDATE: use only one desired_goal
-            #if element == 'desired_goal':
-            #    self.history_buffer[element] = np.zeros(len(self.model.observations), dtype=np.int)
-            #else:
-                self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)
+        #self.history_buffer = dict()
+        #for element in ['observation', 'achieved_goal', 'desired_goal']:
+        #    self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)
 
 
 class HallwayOneHotConcatPOMDP(OneHotConcatPOMDP):
-    def __init__(self, text, *, episodic, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
         start_states = [0, 1, 2, 3, 40, 41, 42, 43]
         start = np.zeros(60, dtype=np.float32)
         start[start_states] = 1 / len(start_states)
@@ -307,16 +311,16 @@ class HallwayOneHotConcatPOMDP(OneHotConcatPOMDP):
         super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals,
                          start_to_obs=start_to_obs)
 
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
-            achieved_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
-            observation=spaces.MultiBinary(len(self.model.observations) * self.concat_length)
-        ))
+        #self.observation_space = spaces.Dict(dict(
+        #    desired_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
+        #    achieved_goal=spaces.MultiBinary(len(self.model.observations) * self.concat_length),
+        #    observation=spaces.MultiBinary(len(self.model.observations) * self.concat_length)
+        #))
         # Create a history of concat_length observations (times 3 since we have 3 components of our observation)
-        self.history_buffer = dict()
-        for element in ['observation', 'achieved_goal', 'desired_goal']:
+        #self.history_buffer = dict()
+        #for element in ['observation', 'achieved_goal', 'desired_goal']:
             # UPDATE: use only one desired_goal
             #if element == 'desired_goal':
             #    self.history_buffer[element] = np.zeros(len(self.model.observations), dtype=np.int)
             #else:
-                self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)
+        #    self.history_buffer[element] = np.zeros(len(self.model.observations) * self.concat_length, dtype=np.int)

@@ -6,16 +6,15 @@ from gym.utils import seeding
 
 from rl_parsers.mdp import parse
 
-__all__ = ['OneHotMDP', 'HallwayOneHotMDP', 'CheeseOneHotMDP', 'MitOneHotMDP', 'CitOneHotMDP']
+__all__ = ['OneHotMDP', 'HallwayOneHotMDP', 'CheeseOneHotMDP', 'BigcheeseOneHotMDP', 'MitOneHotMDP', 'CitOneHotMDP']
 
 
 # NOTE: Each domain must extend this
 class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf, potential_goals=None):
+    def __init__(self, text, *, seed=None, step_cap=np.inf, potential_goals=None):
         model = parse(text)
-        self.episodic = episodic
         self.seed(seed)
 
         if model.values == 'cost':
@@ -43,10 +42,7 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         # self.R = model.R.transpose(1, 0, 2, 3).copy()
         self.R = model.R.transpose(1, 0, 2).copy()
 
-        if episodic:
-            self.D = model.reset.T.copy()  # only if episodic
 
-        self.dense = dense_reward
         if potential_goals:
             self.potential_goals = potential_goals
         else:
@@ -54,6 +50,12 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
         #self.state = -1
         self.state = np.zeros(len(model.states), dtype=np.int)
+
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.MultiBinary(len(self.model.states)),
+            achieved_goal=spaces.MultiBinary(len(self.model.states)),
+            observation=spaces.MultiBinary(len(self.model.states))
+        ))
         
     def _get_obs(self):
         obs = self.get_state()
@@ -146,40 +148,21 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
         if done:
-            # state_next = -1
             state_next = np.zeros(len(self.model.states), dtype=np.int)
             
         self.steps += 1
         if self.steps >= self.step_cap:
             done = True
 
-        # reward_cat = self.rewards_dict[reward]
-        # info = dict(reward_cat=reward_cat)
-
-        # return state_next, obs, reward, done, info
         return state_next, reward, done, info
 
     def compute_reward(self, achieved_goal, desired_goal, info):
-        #if achieved_goal == goal:
-        #    return 0
-        #else:
-        #    return -1
-        if self.dense:
-            if np.array_equal(achieved_goal, desired_goal):
-                return 0
-            else:
-                return -1
+        if np.array_equal(achieved_goal, desired_goal):
+            return 0
         else:
-            if np.array_equal(achieved_goal, desired_goal):
-                return 1
-            else:
-                return 0
+            return -1
         
     def _is_success(self, achieved_goal, desired_goal):
-        #if achieved_goal == desired_goal:
-        #    return True
-        #else:
-        #    return False
         if np.array_equal(achieved_goal, desired_goal):
             return True
         else:
@@ -187,15 +170,11 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
 class HallwayOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap, potential_goals=list(range(44, 60)))
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
+        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=list(range(44, 60)))
 
         #self.goal = self._sample_goal()
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.states)),
-            achieved_goal=spaces.MultiBinary(len(self.model.states)),
-            observation=spaces.MultiBinary(len(self.model.states))
-        ))
+
         #self.step_cap = 15 #np.inf
 
 #    def _sample_goal(self):
@@ -206,15 +185,11 @@ class HallwayOneHotMDP(OneHotMDP):
 
 
 class CheeseOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap, potential_goals=[8, 9, 10])
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
+        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=[8, 9, 10])
 
         #self.goal = self._sample_goal()
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.states)),
-            achieved_goal=spaces.MultiBinary(len(self.model.states)),
-            observation=spaces.MultiBinary(len(self.model.states))
-        ))
+
         #self.step_cap = 10  # np.inf
 
   #  def _sample_goal(self):
@@ -224,18 +199,17 @@ class CheeseOneHotMDP(OneHotMDP):
   #      return goal
 
 
+class BigcheeseOneHotMDP(OneHotMDP):
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
+        super().__init__(text, seed=seed, step_cap=step_cap,
+                         potential_goals=[28, 29, 30, 31, 32])
+
 class MitOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap,
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
+        super().__init__(text, seed=seed, step_cap=step_cap,
                          potential_goals=[52, 53, 54, 55, 100, 101, 102, 103, 168, 169, 170, 171, 196, 197, 198, 199])
 
-        #self.goal = self._sample_goal()
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.states)),
-            achieved_goal=spaces.MultiBinary(len(self.model.states)),
-            observation=spaces.MultiBinary(len(self.model.states))
-        ))
-        #self.step_cap = 50
+
 
  #   def _sample_goal(self):
         # 168, 169, 170, 171
@@ -246,15 +220,11 @@ class MitOneHotMDP(OneHotMDP):
         
 
 class CitOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, episodic, seed=None, dense_reward=True, step_cap=np.inf):
-        super().__init__(text, episodic=episodic, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
+    def __init__(self, text, *, seed=None, dense_reward=True, step_cap=np.inf):
+        super().__init__(text, seed=seed, dense_reward=dense_reward, step_cap=step_cap)
 
         #self.goal = self._sample_goal()
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.states)),
-            achieved_goal=spaces.MultiBinary(len(self.model.states)),
-            observation=spaces.MultiBinary(len(self.model.states))
-        ))
+
         #self.step_cap = 50
 
   #  def _sample_goal(self):

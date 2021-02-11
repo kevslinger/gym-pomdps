@@ -11,10 +11,9 @@ __all__ = ['OneHotGoalPOMDP', 'CheeseOneHotGoalPOMDP', 'BigcheeseOneHotGoalPOMDP
 class OneHotGoalPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by POMDP file."""
 
-    def __init__(self, text, *, episodic, seed=None, step_cap=np.inf, potential_goals=None, start=None, start_to_obs=None):
+    def __init__(self, text, *, seed=None, step_cap=np.inf, potential_goals=None, start=None, start_to_obs=None):
         #print('text is {}'.format(text))
         model = pomdp_parse(text)
-        self.episodic = episodic
         self.seed(seed)
 
         if model.values == 'cost':
@@ -46,8 +45,6 @@ class OneHotGoalPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             )
         self.R = model.R.transpose(1, 0, 2, 3).copy()
 
-        if episodic:
-            self.D = model.reset.T.copy()  # only if episodic
 
         # NOTE currently elsewhere
         # self.TO = np.expand_dims(self.T, axis=-1) * self.O
@@ -71,6 +68,12 @@ class OneHotGoalPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             self.start_to_obs = start_to_obs
         else:
             self.start_to_obs = np.identity(len(model.observations))
+
+        self.observation_space = spaces.Dict(dict(
+            desired_goal=spaces.MultiBinary(len(self.model.observations)),
+            achieved_goal=spaces.MultiBinary(len(self.model.observations)),
+            observation=spaces.MultiBinary(len(self.model.observations))
+        ))
 
     def _get_obs(self):
         obs = self.get_obs()
@@ -211,7 +214,7 @@ class OneHotGoalPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             return False
 
 class CheeseOneHotGoalPOMDP(OneHotGoalPOMDP):
-    def __init__(self, text, *, episodic, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
         # Goals must be observations
         potential_goals = [5, 6, 7]
         start = None
@@ -221,13 +224,13 @@ class CheeseOneHotGoalPOMDP(OneHotGoalPOMDP):
             2: [0, 0, 1, 0, 0, 0, 0, 0],
             4: [0, 0, 0, 1, 0, 0, 0, 0]
         }
-        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start=start, start_to_obs=start_to_obs)
+        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start=start, start_to_obs=start_to_obs)
 
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.observations)),
-            achieved_goal=spaces.MultiBinary(len(self.model.observations)),
-            observation=spaces.MultiBinary(len(self.model.observations))
-        ))
+        #self.observation_space = spaces.Dict(dict(
+        #    desired_goal=spaces.MultiBinary(len(self.model.observations)),
+        #    achieved_goal=spaces.MultiBinary(len(self.model.observations)),
+        #    observation=spaces.MultiBinary(len(self.model.observations))
+        #))
 
         # Make good goals and bad goals.
         # bad goals are alised states -- they don't provide any information
@@ -247,7 +250,7 @@ class CheeseOneHotGoalPOMDP(OneHotGoalPOMDP):
 
 
 class BigcheeseOneHotGoalPOMDP(OneHotGoalPOMDP):
-    def __init__(self, text, *, episodic, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
         # Goals must be observations
         potential_goals = [19, 20, 21, 22, 23]
         start = None
@@ -256,32 +259,17 @@ class BigcheeseOneHotGoalPOMDP(OneHotGoalPOMDP):
             0 : [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             1: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         }
-        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start=start, start_to_obs=start_to_obs)
+        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start=start, start_to_obs=start_to_obs)
 
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.observations)),
-            achieved_goal=spaces.MultiBinary(len(self.model.observations)),
-            observation=spaces.MultiBinary(len(self.model.observations))
-        ))
+        #self.observation_space = spaces.Dict(dict(
+        #    desired_goal=spaces.MultiBinary(len(self.model.observations)),
+        #    achieved_goal=spaces.MultiBinary(len(self.model.observations)),
+        #    observation=spaces.MultiBinary(len(self.model.observations))
+        #))
 
-        # Make good goals and bad goals.
-        # bad goals are alised states -- they don't provide any information
-        # Good goals are fully observable states
-        self.good_goals = np.array([
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1]
-        ])
-        self.bad_goals = np.array([
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0]
-        ])
 
 class HallwayOneHotGoalPOMDP(OneHotGoalPOMDP):
-    def __init__(self, text, *, episodic, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None, step_cap=np.inf):
         start_states = [0, 1, 2, 3, 40, 41, 42, 43]
         start = np.zeros(60, dtype=np.float32)
         start[start_states] = 1/len(start_states)
@@ -297,10 +285,10 @@ class HallwayOneHotGoalPOMDP(OneHotGoalPOMDP):
         }
         #potential_goals = list(range(44, 60))
         potential_goals = list(range(20, 36))
-        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start_to_obs=start_to_obs)
+        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=potential_goals, start_to_obs=start_to_obs)
 
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.observations)),
-            achieved_goal=spaces.MultiBinary(len(self.model.observations)),
-            observation=spaces.MultiBinary(len(self.model.observations))
-        ))
+        #self.observation_space = spaces.Dict(dict(
+        #    desired_goal=spaces.MultiBinary(len(self.model.observations)),
+        #    achieved_goal=spaces.MultiBinary(len(self.model.observations)),
+        #    observation=spaces.MultiBinary(len(self.model.observations))
+        #))
