@@ -110,16 +110,16 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.state = self.reset_functional()
         self.steps = 0
         self.obs = self.get_starting_obs(self.state)
-        obs = {
+        #obs = {
         #    'observation': self.get_obs(),
         #    'achieved_goal': self.get_state(),
         #    'desired_goal': self.get_goal()
         # removing state from obs.
-            'observation': self.get_obs(),
-            'achieved_goal': self.get_obs(),
-            'desired_goal': self.get_goal()
-        }
-        return obs
+        #    'observation': self.get_obs(),
+        #    'achieved_goal': self.get_obs(),
+        #    'desired_goal': self.get_goal()
+        #}
+        return self.obs.copy()
 
     def step(self, action):
         self.state, self.obs, *ret = self.step_functional(self.state, action)
@@ -244,11 +244,8 @@ class CheeseOneHotPOMDP(OneHotPOMDP):
 
 class HallwayOneHotPOMDP(OneHotPOMDP):
     def __init__(self, text, *, seed=None, step_cap=np.inf):
-        start_states = [0, 1, 2, 3, 40, 41, 42, 43]
-        start = np.zeros(60, dtype=np.float32)
-        start[start_states] = 1/len(start_states)
         start_to_obs = {
-            0 : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            0: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             1: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             2: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             3: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -383,10 +380,19 @@ class HallwayOneHotPOMDP(OneHotPOMDP):
         #potential_goals = list(range(20, 36))
         goal = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                  1.0]
-        super().__init__(text, seed=seed, step_cap=step_cap, goal=goal, start_to_obs=start_to_obs)
+        super().__init__(text, seed=seed, step_cap=step_cap, goal=goal, start_to_obs=None)
 
         #self.observation_space = spaces.Dict(dict(
         #    desired_goal=spaces.MultiBinary(len(self.model.observations)),
         #    achieved_goal=spaces.MultiBinary(len(self.model.observations)),
         #    observation=spaces.MultiBinary(len(self.model.observations))
         #))
+    def get_starting_obs(self, state):
+        self.state, self.obs, *ret = self.step_functional(state, 0)
+        obs = self._get_obs()
+        #print(state)
+        #obs, _, _, _ = self.step(0) # 0 is no-op
+        #print(obs)
+        #obs = np.zeros(len(self.model.observations), dtype=np.int)
+        #obs[self.start_to_obs[state.argmax()]] = 1
+        return obs
