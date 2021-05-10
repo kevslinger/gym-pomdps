@@ -129,7 +129,7 @@ class OneHotGoalPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             'achieved_goal': self.get_obs(),
             'desired_goal': self.get_goal()
         }
-        return obs.copy()
+        return obs
 
     def step(self, action):
         self.state, self.obs, *ret = self.step_functional(self.state, action)

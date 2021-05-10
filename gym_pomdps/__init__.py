@@ -68,7 +68,7 @@ for filename in (
                 entry_point=f'gym_pomdps.envs:{env_name.capitalize()}OneHotConcatPOMDP',
                 kwargs=dict(text=text, step_cap=np.inf)
             )
-    for env_name in ['hallway', 'cheese', 'bigcheese', 'mit', 'cit']:
+    for env_name in ['hallway', 'cheese', 'bigcheese']:
         if filename == env_name + 'mdp.pomdp':
             register_mdp(
                 id=f'MDP-{env_name}-v{version}',
@@ -78,5 +78,10 @@ for filename in (
             register_mdp(
                 id=f'MDP-{env_name}onehot-v{version}',
                 entry_point=f'gym_pomdps.envs:{env_name.capitalize()}OneHotMDP',
+                kwargs=dict(text=text, step_cap=np.inf)
+            )
+            register_mdp(
+                id=f'MDP-Goal-{env_name}onehot-v{version}',
+                entry_point=f'gym_pomdps.envs:{env_name.capitalize()}OneHotGoalMDP',
                 kwargs=dict(text=text, step_cap=np.inf)
             )
