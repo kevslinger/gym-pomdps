@@ -8,7 +8,7 @@ from rl_parsers.pomdp import parse as pomdp_parse
 __all__ = ['OneHotPOMDP', 'CheeseOneHotPOMDP', 'HallwayOneHotPOMDP']
 
 
-class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
+class OneHotPOMDP(gym.Env):  # pylint: disable=abstract-method
     """Environment specified by POMDP file."""
 
     def __init__(self, text, *, seed=None, step_cap=np.inf, goal=None, start=None, start_to_obs=None):
@@ -24,7 +24,7 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.state_space = spaces.Discrete(len(model.states))
         self.action_space = spaces.Discrete(len(model.actions))
         #self.observation_space = spaces.Discrete(len(model.observations))
-        self.observation_space = None
+        self.observation_space = spaces.MultiBinary(len(self.model.observations))
         self.reward_range = model.R.min(), model.R.max()
 
         self.rewards_dict = {r: i for i, r in enumerate(np.unique(model.R))}
@@ -67,22 +67,6 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         else:
             self.start_to_obs = np.identity(len(model.observations))
 
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.observations)),
-            achieved_goal=spaces.MultiBinary(len(self.model.observations)),
-            observation=spaces.MultiBinary(len(self.model.observations))
-        ))
-
-    def _get_obs(self):
-        obs = self.get_obs()
-        achieved_goal = self.get_obs()
-        goal = self.get_goal()
-        return {
-            'observation': obs,
-            'achieved_goal': achieved_goal,
-            'desired_goal': goal
-        }
-
     def _sample_goal(self):
         raise NotImplementedError("We do not sample goal in the single goal case")
 
@@ -123,8 +107,7 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
     def step(self, action):
         self.state, self.obs, *ret = self.step_functional(self.state, action)
-        obs = self._get_obs()
-        return (obs, *ret)
+        return (self.obs.copy(), *ret)
 
     # Returns a random starting state in one-hot form
     def reset_functional(self):
@@ -215,7 +198,7 @@ class OneHotPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 class CheeseOneHotPOMDP(OneHotPOMDP):
     def __init__(self, text, *, seed=None, step_cap=np.inf):
         # Goals must be observations
-        goal = [0, 0, 0, 0, 0, 0, 1]
+        goal = np.array([0, 0, 0, 0, 0, 0, 1], dtype=np.int)
         start = None
         #start = [1/3, 0, 1/3, 0, 1/3, 0, 0, 0, 0, 0, 0]
         start_to_obs = {
@@ -378,8 +361,8 @@ class HallwayOneHotPOMDP(OneHotPOMDP):
         }
         #potential_goals = list(range(44, 60))
         #potential_goals = list(range(20, 36))
-        goal = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                 1.0]
+        goal = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                 1], dtype=np.int)
         super().__init__(text, seed=seed, step_cap=step_cap, goal=goal, start_to_obs=None)
 
         #self.observation_space = spaces.Dict(dict(
