@@ -10,10 +10,10 @@ __all__ = ['OneHotMDP', 'HallwayOneHotMDP', 'CheeseOneHotMDP', 'BigcheeseOneHotM
 
 
 # NOTE: Each domain must extend this
-class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
+class OneHotMDP(gym.Env):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
-    def __init__(self, text, *, seed=None, step_cap=np.inf, goal: int=None):
+    def __init__(self, text, *, seed=None, goal: int=None):
         model = parse(text)
         self.seed(seed)
 
@@ -24,12 +24,10 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.discount = model.discount
         self.state_space = spaces.MultiBinary(len(model.states))
         self.action_space = spaces.Discrete(len(model.actions))
-        self.observation_space = None
+        self.observation_space = observation=spaces.MultiBinary(len(self.model.states))
         self.goal = None
         self.reward_range = model.R.min(), model.R.max()
 
-        self.steps = 0
-        self.step_cap = step_cap
 
         self.rewards_dict = {r: i for i, r in enumerate(np.unique(model.R))}
 
@@ -49,22 +47,6 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         #self.state = -1
         self.state = np.zeros(len(model.states), dtype=np.int)
 
-        self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.MultiBinary(len(self.model.states)),
-            achieved_goal=spaces.MultiBinary(len(self.model.states)),
-            observation=spaces.MultiBinary(len(self.model.states))
-        ))
-        
-    def _get_obs(self):
-        obs = self.get_state()
-        achieved_goal = self.get_state()
-        return {
-            'observation': obs,
-            'achieved_goal': achieved_goal,
-            'desired_goal': self.goal
-        }
-
-
     def get_state(self):
         return self.state
 
@@ -74,22 +56,18 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
     def reset(self):
         self.state = self.reset_functional()
-        self.steps = 0
-        return self._get_obs()
+        return self.get_state().copy()
 
     def step(self, action):
-        # self.state, *ret = self.step_functional(self.state, action)
-        obs = self._get_obs()
-        ret = self.step_functional(self.state, obs, action)
+        ret = self.step_functional(self.state, action)
         self.state = ret[0]
-        obs = self._get_obs()
-        return (obs, *ret[1:])
+        return ret
 
     def reset_functional(self):
         #return self.np_random.multinomial(1, self.start).argmax().item()
         return self.np_random.multinomial(1, self.start)
         
-    def step_functional(self, state, obs, action):
+    def step_functional(self, state, action):
         if (np.array_equal(state, np.zeros(len(self.model.states), dtype=np.int))) != (action == -1):
             raise ValueError(f'Invalid state-action pair ({state}, {action}).')
         if (np.array_equal(state, np.zeros(len(self.model.states), dtype=np.int))) and action == -1:
@@ -131,19 +109,14 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         #done = self._is_success(state, self.goal)
         done = self._is_success(state_next, self.goal)
         info = {
-            'is_success' : 1 if done else 0,
+            'is_success': 1 if done else 0,
 
         }
 
         reward = self.compute_reward(state_next, self.goal, info)
 
-
         if done:
             state_next = np.zeros(len(self.model.states), dtype=np.int)
-            
-        self.steps += 1
-        if self.steps >= self.step_cap:
-            done = True
 
         return state_next, reward, done, info
 
@@ -161,12 +134,12 @@ class OneHotMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
 class HallwayOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
-        super().__init__(text, seed=seed, step_cap=step_cap, goal=58)
+    def __init__(self, text, *, seed=None):
+        super().__init__(text, seed=seed, goal=58)
 
         #self.goal = self._sample_goal()
 
-        #self.step_cap = 15 #np.inf
+
 
 #    def _sample_goal(self):
 #        possible_goals = list(range(44, 60))
@@ -176,12 +149,11 @@ class HallwayOneHotMDP(OneHotMDP):
 
 
 class CheeseOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
-        super().__init__(text, seed=seed, step_cap=step_cap, goal=10)
+    def __init__(self, text, *, seed=None):
+        super().__init__(text, seed=seed, goal=10)
 
         #self.goal = self._sample_goal()
 
-        #self.step_cap = 10  # np.inf
 
   #  def _sample_goal(self):
   #      possible_goals = [8, 9, 10]
@@ -191,12 +163,12 @@ class CheeseOneHotMDP(OneHotMDP):
 
 
 class BigcheeseOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
-        super().__init__(text, seed=seed, step_cap=step_cap, goal=30)
+    def __init__(self, text, *, seed=None):
+        super().__init__(text, seed=seed, goal=30)
 
 class MitOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
-        super().__init__(text, seed=seed, step_cap=step_cap,
+    def __init__(self, text, *, seed=None):
+        super().__init__(text, seed=seed,
                          potential_goals=[52, 53, 54, 55, 100, 101, 102, 103, 168, 169, 170, 171, 196, 197, 198, 199])
 
 
@@ -210,12 +182,11 @@ class MitOneHotMDP(OneHotMDP):
         
 
 class CitOneHotMDP(OneHotMDP):
-    def __init__(self, text, *, seed=None, dense_reward=True, step_cap=np.inf):
-        super().__init__(text, seed=seed, step_cap=step_cap)
+    def __init__(self, text, *, seed=None):
+        super().__init__(text, seed=seed)
 
         #self.goal = self._sample_goal()
 
-        #self.step_cap = 50
 
   #  def _sample_goal(self):
   #      # 68, 69, 70, 71

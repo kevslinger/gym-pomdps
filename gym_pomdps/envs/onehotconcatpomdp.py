@@ -14,7 +14,7 @@ ELEMENTS = ['observation', 'achieved_goal', 'desired_goal']
 class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by POMDP file."""
 
-    def __init__(self, text, *, seed=None, step_cap=np.inf, potential_goals=None, start=None,
+    def __init__(self, text, *, seed=None, potential_goals=None, start=None,
                  start_to_obs=None):
         # print('text is {}'.format(text))
         model = pomdp_parse(text)
@@ -62,8 +62,6 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.obs = np.zeros(len(model.states), dtype=np.int)
 
         self.goal = None
-        self.steps = 0
-        self.step_cap = step_cap
         if potential_goals:
             self.potential_goals = potential_goals
         else:
@@ -153,7 +151,6 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     # Kevin changed
     def reset(self):
         self.state = self.reset_functional()
-        self.steps = 0
         self.goal = self._sample_goal().copy()
         self.obs = self.get_starting_obs(self.state)
         obs = achieved_goal = self.obs
@@ -230,9 +227,6 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
             # state_next = -1
             state_next = np.zeros(len(self.model.states), dtype=np.int)
 
-        self.steps += 1
-        if self.steps >= self.step_cap:
-            done = True
 
         # reward_cat = self.rewards_dict[reward]
         # info = dict(reward_cat=reward_cat)
@@ -259,7 +253,7 @@ class OneHotConcatPOMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
 class CheeseOneHotConcatPOMDP(OneHotConcatPOMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None):
         # Goals must be observations
         potential_goals = [5, 6, 7]
         start = None
@@ -269,7 +263,7 @@ class CheeseOneHotConcatPOMDP(OneHotConcatPOMDP):
             2: [0, 0, 1, 0, 0, 0, 0, 0],
             4: [0, 0, 0, 1, 0, 0, 0, 0]
         }
-        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=potential_goals,
+        super().__init__(text, seed=seed, potential_goals=potential_goals,
                          start=start, start_to_obs=start_to_obs)
 
         #self.observation_space = spaces.Dict(dict(
@@ -284,7 +278,7 @@ class CheeseOneHotConcatPOMDP(OneHotConcatPOMDP):
 
 
 class HallwayOneHotConcatPOMDP(OneHotConcatPOMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None):
         start_states = [0, 1, 2, 3, 40, 41, 42, 43]
         start = np.zeros(60, dtype=np.float32)
         start[start_states] = 1 / len(start_states)
@@ -308,7 +302,7 @@ class HallwayOneHotConcatPOMDP(OneHotConcatPOMDP):
         }
         # potential_goals = list(range(44, 60))
         potential_goals = list(range(20, 36))
-        super().__init__(text, episodic=episodic, seed=seed, step_cap=step_cap, potential_goals=potential_goals,
+        super().__init__(text, seed=seed, potential_goals=potential_goals,
                          start_to_obs=start_to_obs)
 
         #self.observation_space = spaces.Dict(dict(

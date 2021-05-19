@@ -13,7 +13,7 @@ __all__ = ['OneHotGoalMDP', 'HallwayOneHotGoalMDP', 'CheeseOneHotGoalMDP', 'Bigc
 class OneHotGoalMDP(gym.GoalEnv):  # pylint: disable=abstract-method
     """Environment specified by MDP file."""
 
-    def __init__(self, text, *, seed=None, step_cap=np.inf, potential_goals=None):
+    def __init__(self, text, *, seed=None, potential_goals=None):
         model = parse(text)
         self.seed(seed)
 
@@ -28,9 +28,6 @@ class OneHotGoalMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         self.goal = None
         self.reward_range = model.R.min(), model.R.max()
 
-        self.steps = 0
-        self.step_cap = step_cap
-
         self.rewards_dict = {r: i for i, r in enumerate(np.unique(model.R))}
 
         if model.start is None:
@@ -41,7 +38,6 @@ class OneHotGoalMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
         # self.R = model.R.transpose(1, 0, 2, 3).copy()
         self.R = model.R.transpose(1, 0, 2).copy()
-
 
         if potential_goals:
             self.potential_goals = potential_goals
@@ -80,7 +76,6 @@ class OneHotGoalMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
     def reset(self):
         self.state = self.reset_functional()
-        self.steps = 0
         self.goal = self._sample_goal().copy()
         return self._get_obs()
 
@@ -150,10 +145,6 @@ class OneHotGoalMDP(gym.GoalEnv):  # pylint: disable=abstract-method
         if done:
             state_next = np.zeros(len(self.model.states), dtype=np.int)
             self.goal = np.zeros(len(self.model.states), dtype=np.int)
-            
-        self.steps += 1
-        if self.steps >= self.step_cap:
-            done = True
 
         return state_next, reward, done, info
 
@@ -171,8 +162,8 @@ class OneHotGoalMDP(gym.GoalEnv):  # pylint: disable=abstract-method
 
 
 class HallwayOneHotGoalMDP(OneHotGoalMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
-        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=list(range(44, 60)))
+    def __init__(self, text, *, seed=None):
+        super().__init__(text, seed=seed, potential_goals=list(range(44, 60)))
 
         #self.goal = self._sample_goal()
 
@@ -186,8 +177,8 @@ class HallwayOneHotGoalMDP(OneHotGoalMDP):
 
 
 class CheeseOneHotGoalMDP(OneHotGoalMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
-        super().__init__(text, seed=seed, step_cap=step_cap, potential_goals=[8, 9, 10])
+    def __init__(self, text, *, seed=None):
+        super().__init__(text, seed=seed, potential_goals=[8, 9, 10])
 
         #self.goal = self._sample_goal()
 
@@ -201,6 +192,5 @@ class CheeseOneHotGoalMDP(OneHotGoalMDP):
 
 
 class BigcheeseOneHotGoalMDP(OneHotGoalMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
-        super().__init__(text, seed=seed, step_cap=step_cap,
-                         potential_goals=[28, 29, 30, 31, 32])
+    def __init__(self, text, *, seed=None):
+        super().__init__(text, seed=seed, potential_goals=[28, 29, 30, 31, 32])

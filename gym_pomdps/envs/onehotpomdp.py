@@ -11,7 +11,7 @@ __all__ = ['OneHotPOMDP', 'CheeseOneHotPOMDP', 'HallwayOneHotPOMDP']
 class OneHotPOMDP(gym.Env):  # pylint: disable=abstract-method
     """Environment specified by POMDP file."""
 
-    def __init__(self, text, *, seed=None, step_cap=np.inf, goal=None, start=None, start_to_obs=None):
+    def __init__(self, text, *, seed=None, goal=None, start=None, start_to_obs=None):
         #print('text is {}'.format(text))
         model = pomdp_parse(text)
         self.seed(seed)
@@ -60,8 +60,6 @@ class OneHotPOMDP(gym.Env):  # pylint: disable=abstract-method
             raise ValueError("POMDP must have at least one goal state")
         else:
             self.goal = goal
-        self.steps = 0
-        self.step_cap = step_cap
         if start_to_obs:
             self.start_to_obs = start_to_obs
         else:
@@ -89,10 +87,8 @@ class OneHotPOMDP(gym.Env):  # pylint: disable=abstract-method
         self.np_random, seed_ = seeding.np_random(seed)
         return [seed_]
 
-    # Kevin changed
     def reset(self):
         self.state = self.reset_functional()
-        self.steps = 0
         self.obs = self.get_starting_obs(self.state)
         #obs = {
         #    'observation': self.get_obs(),
@@ -159,9 +155,6 @@ class OneHotPOMDP(gym.Env):  # pylint: disable=abstract-method
             #state_next = -1
             state_next = np.zeros(len(self.model.states), dtype=np.int)
 
-        self.steps += 1
-        if self.steps >= self.step_cap:
-            done = True
             
         #reward_cat = self.rewards_dict[reward]
         #info = dict(reward_cat=reward_cat)
@@ -196,7 +189,7 @@ class OneHotPOMDP(gym.Env):  # pylint: disable=abstract-method
         #    return False
 
 class CheeseOneHotPOMDP(OneHotPOMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None):
         # Goals must be observations
         goal = np.array([0, 0, 0, 0, 0, 0, 1], dtype=np.int)
         start = None
@@ -214,7 +207,7 @@ class CheeseOneHotPOMDP(OneHotPOMDP):
             9: [0, 0, 0, 0, 0, 1, 0],
             10: [0, 0, 0, 0, 0, 0, 1],
         }
-        super().__init__(text, seed=seed, step_cap=step_cap, goal=goal, start_to_obs=start_to_obs)
+        super().__init__(text, seed=seed, goal=goal, start_to_obs=start_to_obs)
 
         #self.observation_space = spaces.Dict(dict(
         #    desired_goal=spaces.MultiBinary(len(self.model.observations)),
@@ -226,7 +219,7 @@ class CheeseOneHotPOMDP(OneHotPOMDP):
 
 
 class HallwayOneHotPOMDP(OneHotPOMDP):
-    def __init__(self, text, *, seed=None, step_cap=np.inf):
+    def __init__(self, text, *, seed=None):
         start_to_obs = {
             0: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             1: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -363,7 +356,7 @@ class HallwayOneHotPOMDP(OneHotPOMDP):
         #potential_goals = list(range(20, 36))
         goal = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                  1], dtype=np.int)
-        super().__init__(text, seed=seed, step_cap=step_cap, goal=goal, start_to_obs=None)
+        super().__init__(text, seed=seed, goal=goal, start_to_obs=None)
 
         #self.observation_space = spaces.Dict(dict(
         #    desired_goal=spaces.MultiBinary(len(self.model.observations)),
@@ -372,7 +365,7 @@ class HallwayOneHotPOMDP(OneHotPOMDP):
         #))
     def get_starting_obs(self, state):
         self.state, self.obs, *ret = self.step_functional(state, 0)
-        obs = self._get_obs()
+        obs = self.get_obs()
         #print(state)
         #obs, _, _, _ = self.step(0) # 0 is no-op
         #print(obs)
